@@ -1,5 +1,12 @@
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE TypeFamilies               #-}
 
-module Database ( runDb ) where
+module Database ( runDb
+                , insertDbPlayers
+                , deletePlayer
+                ) where
 
 import ConvertEntities ()
 
@@ -10,7 +17,7 @@ import Database.Persist.Sqlite
 import Data.Text (Text)
 import DbEntities (DbPlayer(..))
 
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Class (liftIO, MonadIO)
 
 -- setup and connect to getEntityFieldsDatabase
 

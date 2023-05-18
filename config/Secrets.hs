@@ -6,4 +6,4 @@ module Secrets (starcraftClientToken) where
 -- curl -u 4c5dd1ce08a248e1ada9a37928f96eac:Z53FCIeMfNwTaLZ55sQPHSGC2PNV1y62 -d grant_type=client_credentials https://oauth.battle.net/token
 
 starcraftClientToken :: String
-starcraftClientToken = "EURmaFr9N7KXL6JkxCww7TP822CkXeQ7gD"
+starcraftClientToken = "EUmTfzLwWdWUx8Pl0FqUJLAQJROwaNHimw"
