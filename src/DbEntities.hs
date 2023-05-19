@@ -13,7 +13,9 @@
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE FlexibleInstances          #-}
 
-module DbEntities (DbPlayer(..)) where
+module DbEntities ( DbPlayer(..)
+                  , migrateDbEntity
+                  ) where
 
 import Database.Persist.Sqlite
 import Database.Persist.TH
@@ -37,3 +39,8 @@ DbPlayer json
     favoriteRace Text Maybe
     deriving Show
 |]
+
+migrateDbEntity :: Text -> IO ()
+migrateDbEntity db = runSqlite db $ do
+  runMigration migrateAll
+  return ()

@@ -1,6 +1,7 @@
 module ConvertEntities ( toDbPlayer
                        , fromDbToPlayer
                        , fromDbToPlayerInfo
+                       , extractDbPlayerFromTuple
                        ) where
 
 import Entities ( Player(..)
@@ -13,6 +14,9 @@ import DbEntities (DbPlayer(..))
 
 
 -- Conversion from response model -> db model and vice versa
+
+extractDbPlayerFromTuple :: (Player, PlayerInfo) -> DbPlayer
+extractDbPlayerFromTuple (a, b) = toDbPlayer a b
 
 fromDbToApiPlayer :: DbPlayer -> ApiPlayer
 fromDbToApiPlayer dbPlayer
