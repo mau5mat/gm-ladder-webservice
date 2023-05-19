@@ -6,6 +6,8 @@ module Domain ( countRaceDistribution
               , numberOfZerg
               , getHighestMMRPlayer
               , getPlayerWithHighestWinRate
+              , toPlayers
+              , toPlayerInfo
               ) where
 
 import Entities ( LadderTeams(..)
@@ -20,6 +22,12 @@ import Data.Maybe ( catMaybes
 
 import Data.Text (Text)
 
+
+toPlayers :: LadderTeams -> [Player]
+toPlayers = ladderTeams
+
+toPlayerInfo :: Player -> [PlayerInfo]
+toPlayerInfo = teamMembers
 
 getPlayerWithHighestWinRate :: LadderTeams -> [Player]
 getPlayerWithHighestWinRate ladder = highestWinPercentagePlayer
