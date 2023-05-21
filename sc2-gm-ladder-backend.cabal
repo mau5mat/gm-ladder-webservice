@@ -37,6 +37,10 @@ executable sc2-gm-ladder-backend
                  , hspec
                  , http-client
                  , http-conduit
+                 , monad-logger
+                 , unliftio
+                 , mtl
+                 , conduit
                  , sc2-gm-ladder-backend
 
     default-language: Haskell2010
@@ -69,5 +73,9 @@ library
                  , hspec
                  , http-client
                  , http-conduit
+                 , monad-logger
+                 , unliftio
+                 , mtl
+                 , conduit
 
     default-language: Haskell2010

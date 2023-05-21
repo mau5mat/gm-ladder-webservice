@@ -14,6 +14,8 @@ import Entities ( Player
 
 import DbEntities ( DbPlayer
                   , migrateDbEntity
+                  , getPlayerByName
+                  , getPlayersByRegion
                   )
 
 import Control.Monad.IO.Class (liftIO)
@@ -27,15 +29,19 @@ main = runApp
 -- just testing here for now
 runApp :: IO ()
 runApp = do
-  na <- getGrandmastersFromRegion "NA"
+  --na <- getGrandmastersFromRegion "NA"
 
-  let naPlayers = toPlayers na
-  let naPlayerInfos = concatMap toPlayerInfo naPlayers
-  let combinePlayerData = zip naPlayers naPlayerInfos
-  let dbPlayers = fmap extractDbPlayerFromTuple combinePlayerData
+  --let naPlayers = toPlayers na
+  --let naPlayerInfos = concatMap toPlayerInfo naPlayers
+  --let combinePlayerData = zip naPlayers naPlayerInfos
+  --let dbPlayers = fmap extractDbPlayerFromTuple combinePlayerData
 
-  migrateDbEntity "players.sqlite3"
+  --migrateDbEntity "players.sqlite3"
 
-  insertDbPlayers "players.sqlite3" dbPlayers
+  --insertDbPlayers "players.sqlite3" dbPlayers
+
+  --getPlayerByName "players.sqlite3" "MillForGG"
+
+  getPlayersByRegion "players.sqlite3" 1
 
   return ()

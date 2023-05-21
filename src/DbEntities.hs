@@ -15,12 +15,15 @@
 
 module DbEntities ( DbPlayer(..)
                   , migrateDbEntity
+                  , getPlayerByName
+                  , getPlayersByRegion
                   ) where
 
 import Database.Persist.Sqlite
 import Database.Persist.TH
 
 import Data.Text (Text)
+import Control.Monad.IO.Class (liftIO)
 
 -- Database Models
 
@@ -44,3 +47,20 @@ migrateDbEntity :: Text -> IO ()
 migrateDbEntity db = runSqlite db $ do
   runMigration migrateAll
   return ()
+
+deletePlayer :: Text -> DbPlayer -> IO ()
+deletePlayer db dbPlayer
+  = runSqlite db $ do
+    return ()
+
+getPlayerByName :: Text -> Text -> IO ()
+getPlayerByName db name
+  = runSqlite db $ do
+  players <- selectList [DbPlayerDisplayName ==. name] []
+  liftIO $ print players
+
+getPlayersByRegion :: Text -> Int -> IO ()
+getPlayersByRegion db region
+  = runSqlite db $ do
+  players <- selectList [DbPlayerRegion ==. 1] []
+  liftIO $ print players

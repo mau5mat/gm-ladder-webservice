@@ -5,7 +5,6 @@
 
 module Database ( runDb
                 , insertDbPlayers
-                , deletePlayer
                 ) where
 
 import ConvertEntities ()
@@ -17,7 +16,11 @@ import Database.Persist.Sqlite
 import Data.Text (Text)
 import DbEntities (DbPlayer(..))
 
-import Control.Monad.IO.Class (liftIO, MonadIO)
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Reader (ReaderT)
+import Control.Monad.Logger (NoLoggingT)
+
+import Conduit (ResourceT, MonadUnliftIO)
 
 -- setup and connect to getEntityFieldsDatabase
 
@@ -30,8 +33,3 @@ insertDbPlayers db entities
   = runSqlite db $ do
     players <- mapM insert entities
     liftIO $ print players
-
-deletePlayer :: Text -> DbPlayer -> IO ()
-deletePlayer db dbPlayer
-  = runSqlite db $ do
-    return ()
