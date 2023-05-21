@@ -14,13 +14,18 @@ import Entities ( Player
 
 import DbEntities ( DbPlayer
                   , migrateDbEntity
-                  , getPlayerByName
-                  , getPlayersByRegion
                   )
 
-import Control.Monad.IO.Class (liftIO)
+import Database ( insertDbPlayers
+                , getPlayersByRegion
+                , getPlayerByName
+                , deletePlayer
+                )
+
 import ConvertEntities (extractDbPlayerFromTuple)
-import Database (insertDbPlayers)
+
+import Control.Monad.IO.Class (liftIO)
+
 import Data.Text (Text)
 
 main :: IO ()
@@ -40,8 +45,8 @@ runApp = do
 
   --insertDbPlayers "players.sqlite3" dbPlayers
 
-  --getPlayerByName "players.sqlite3" "MillForGG"
+  getPlayerByName "players.sqlite3" "MillForGG"
 
-  getPlayersByRegion "players.sqlite3" 1
+  --getPlayersByRegion "players.sqlite3" 1
 
   return ()

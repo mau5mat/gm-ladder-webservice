@@ -16,7 +16,6 @@ import Database.Persist.TH
 
 import Data.Text (Text)
 
--- Network Models
 
 newtype LadderTeams
   = LadderTeams

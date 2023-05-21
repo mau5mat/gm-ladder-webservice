@@ -1,6 +1,7 @@
 module ApiEntities (ApiPlayer(..)) where
 
-import Data.Text
+import Data.Text (Text)
+
 
 data ApiPlayer
   = ApiPlayer

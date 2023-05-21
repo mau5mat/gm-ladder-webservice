@@ -4,6 +4,7 @@ module BattleNet (createUrlWithRegion) where
 
 import Secrets (starcraftClientToken)
 
+
 createUrlWithRegion :: String -> String
 createUrlWithRegion id = baseUrl
                       <> grandmasterPath
