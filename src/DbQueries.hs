@@ -3,11 +3,11 @@
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module Database ( insertDbPlayers
-                , getPlayersByRegion
-                , getPlayerByName
-                , deletePlayer
-                ) where
+module DbQueries ( insertDbPlayers
+                 , getPlayersByRegion
+                 , getPlayerByName
+                 , deletePlayer
+                 ) where
 
 import ConvertEntities ()
 

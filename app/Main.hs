@@ -16,11 +16,11 @@ import DbEntities ( DbPlayer
                   , migrateDbEntity
                   )
 
-import Database ( insertDbPlayers
-                , getPlayersByRegion
-                , getPlayerByName
-                , deletePlayer
-                )
+import DbQueries ( insertDbPlayers
+                 , getPlayersByRegion
+                 , getPlayerByName
+                 , deletePlayer
+                 )
 
 import ConvertEntities (extractDbPlayerFromTuple)
 

@@ -51,14 +51,13 @@ library
                   , config
 
     exposed-modules: BattleNet
-                   , Database
+                   , DbQueries
                    , Domain
                    , Entities
                    , DbEntities
                    , ApiEntities
                    , ConvertEntities
                    , Network
-                   , Queries
                    , Api
                    , Secrets
 
