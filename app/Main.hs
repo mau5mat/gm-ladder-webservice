@@ -4,9 +4,10 @@ module Main where
 
 import Network (getGrandmastersFromRegion)
 
-import Domain ( toPlayers
-              , toPlayerInfo
-              )
+import ConvertEntities ( toPlayers
+                       , toPlayerInfo
+                       , toDbPlayerFromTuple
+                       )
 
 import Entities ( Player
                 , PlayerInfo
@@ -22,10 +23,6 @@ import DbQueries ( insertDbPlayers
                  , deletePlayer
                  )
 
-import ConvertEntities (extractDbPlayerFromTuple)
-
-import Control.Monad.IO.Class (liftIO)
-
 import Data.Text (Text)
 
 main :: IO ()
@@ -38,15 +35,15 @@ runApp = do
 
   --let naPlayers = toPlayers na
   --let naPlayerInfos = concatMap toPlayerInfo naPlayers
-  --let combinePlayerData = zip naPlayers naPlayerInfos
-  --let dbPlayers = fmap extractDbPlayerFromTuple combinePlayerData
+  --let combinedPlayerData = zip naPlayers naPlayerInfos
+  --let dbPlayers = fmap toDbPlayerFromTuple combinedPlayerData
 
   --migrateDbEntity "players.sqlite3"
 
   --insertDbPlayers "players.sqlite3" dbPlayers
 
-  getPlayerByName "players.sqlite3" "MillForGG"
-
   --getPlayersByRegion "players.sqlite3" 1
+
+  getPlayerByName "players.sqlite3" "MillForGG"
 
   return ()

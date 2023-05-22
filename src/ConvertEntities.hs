@@ -1,10 +1,14 @@
-module ConvertEntities ( toDbPlayer
+module ConvertEntities ( toPlayers
+                       , toPlayerInfo
+                       , toDbPlayer
+                       , toDbPlayerFromTuple
                        , fromDbToPlayer
                        , fromDbToPlayerInfo
-                       , extractDbPlayerFromTuple
+                       , fromDbToApiPlayer
                        ) where
 
-import Entities ( Player(..)
+import Entities ( LadderTeams(..)
+                , Player(..)
                 , PlayerInfo(..)
                 )
 
@@ -13,27 +17,11 @@ import ApiEntities (ApiPlayer(..))
 import DbEntities (DbPlayer(..))
 
 
--- Conversion from response model -> db model and vice versa
+toPlayers :: LadderTeams -> [Player]
+toPlayers = ladderTeams
 
-extractDbPlayerFromTuple :: (Player, PlayerInfo) -> DbPlayer
-extractDbPlayerFromTuple (a, b) = toDbPlayer a b
-
-fromDbToApiPlayer :: DbPlayer -> ApiPlayer
-fromDbToApiPlayer dbPlayer
-  = ApiPlayer
-  { apiPreviousRank = dbPlayerPreviousRank dbPlayer
-  , apiPoints = dbPlayerPoints dbPlayer
-  , apiWins = dbPlayerWins dbPlayer
-  , apiLosses = dbPlayerLosses dbPlayer
-  , apiMmr = dbPlayerMmr dbPlayer
-  , apiJoinTimestamp = dbPlayerJoinTimestamp dbPlayer
-  , apiRealm = dbPlayerRealm dbPlayer
-  , apiRegion = dbPlayerRegion dbPlayer
-  , apiDisplayName = dbPlayerDisplayName dbPlayer
-  , apiClanTag = dbPlayerClanTag dbPlayer
-  , apiFavoriteRace = dbPlayerFavoriteRace dbPlayer
-  }
-
+toPlayerInfo :: Player -> [PlayerInfo]
+toPlayerInfo = teamMembers
 
 toDbPlayer :: Player -> PlayerInfo -> DbPlayer
 toDbPlayer player playerInfo
@@ -50,6 +38,9 @@ toDbPlayer player playerInfo
   , dbPlayerClanTag = clanTag playerInfo
   , dbPlayerFavoriteRace = favoriteRace playerInfo
   }
+
+toDbPlayerFromTuple :: (Player, PlayerInfo) -> DbPlayer
+toDbPlayerFromTuple (a, b) = toDbPlayer a b
 
 fromDbToPlayer :: DbPlayer -> PlayerInfo -> Player
 fromDbToPlayer dbPlayer playerInfo
@@ -71,4 +62,20 @@ fromDbToPlayerInfo dbPlayer
   , displayName = dbPlayerDisplayName dbPlayer
   , clanTag = dbPlayerClanTag dbPlayer
   , favoriteRace = dbPlayerFavoriteRace dbPlayer
+  }
+
+fromDbToApiPlayer :: DbPlayer -> ApiPlayer
+fromDbToApiPlayer dbPlayer
+  = ApiPlayer
+  { apiPreviousRank = dbPlayerPreviousRank dbPlayer
+  , apiPoints = dbPlayerPoints dbPlayer
+  , apiWins = dbPlayerWins dbPlayer
+  , apiLosses = dbPlayerLosses dbPlayer
+  , apiMmr = dbPlayerMmr dbPlayer
+  , apiJoinTimestamp = dbPlayerJoinTimestamp dbPlayer
+  , apiRealm = dbPlayerRealm dbPlayer
+  , apiRegion = dbPlayerRegion dbPlayer
+  , apiDisplayName = dbPlayerDisplayName dbPlayer
+  , apiClanTag = dbPlayerClanTag dbPlayer
+  , apiFavoriteRace = dbPlayerFavoriteRace dbPlayer
   }
