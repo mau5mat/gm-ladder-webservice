@@ -7,7 +7,8 @@
 module DbQueries ( insertDbPlayers
                  , getPlayersByRegion
                  , getPlayerByName
-                 , deletePlayer
+                 , getPlayerWithHighestWinRate
+                 , getHighestMMRPlayer
                  ) where
 
 import ConvertEntities ()
@@ -36,6 +37,37 @@ import Data.Maybe ( catMaybes
 import Data.Text (Text)
 
 
+insertDbPlayers :: Text -> [DbPlayer] -> IO ()
+insertDbPlayers db entities
+  = runSqlite db $ do
+    players <- mapM insert entities
+    liftIO $ print players
+
+getPlayersByRegion :: Text -> Int -> IO [Entity DbPlayer]
+getPlayersByRegion db region
+  = runSqlite db $ do
+  players <- selectList [DbPlayerRegion ==. region] []
+
+  liftIO $ return players
+
+getPlayerByName :: [DbPlayer] -> Text -> Maybe DbPlayer
+getPlayerByName dbPlayers name
+  = case namedPlayer of
+      [] -> Nothing
+      [x] -> Just x
+  where namedPlayer
+          = filter (\player -> dbPlayerDisplayName player == name) dbPlayers
+
+getHighestMMRPlayer :: [DbPlayer] -> Maybe DbPlayer
+getHighestMMRPlayer dbPlayers
+  = case highestMMRPlayer of
+      []  -> Nothing
+      [x] -> Just x
+  where highestMMRPlayer
+          = filter (\player -> checkMMR player == maximum allMMRs) dbPlayers
+        allMMRs
+          = mapMaybe dbPlayerMmr dbPlayers
+
 getPlayerWithHighestWinRate :: [DbPlayer] -> Maybe DbPlayer
 getPlayerWithHighestWinRate dbPlayers
   = case highestWinPercentagePlayer of
@@ -52,16 +84,6 @@ calculateWinPercentage wins losses = show winPercent
           = fromIntegral wins + fromIntegral losses
         winPercent
           = fromIntegral wins / totalPlayed * 100
-
-getHighestMMRPlayer :: [DbPlayer] -> Maybe DbPlayer
-getHighestMMRPlayer dbPlayers
-  = case highestMMRPlayer of
-      []  -> Nothing
-      [x] -> Just x
-  where highestMMRPlayer
-          = filter (\player -> checkMMR player == maximum allMMRs) dbPlayers
-        allMMRs
-          = mapMaybe dbPlayerMmr dbPlayers
 
 checkMMR :: DbPlayer -> Int
 checkMMR dbPlayer = fromMaybe 0 (dbPlayerMmr dbPlayer)
@@ -98,27 +120,3 @@ isZerg s =
   case s of
     "zerg" -> True
     _      -> False
-
-insertDbPlayers :: Text -> [DbPlayer] -> IO ()
-insertDbPlayers db entities
-  = runSqlite db $ do
-    players <- mapM insert entities
-    liftIO $ print players
-
-getPlayersByRegion :: Text -> Int -> IO ()
-getPlayersByRegion db region
-  = runSqlite db $ do
-  players <- selectList [DbPlayerRegion ==. 1] []
-  liftIO $ print players
-
-getPlayerByName :: Text -> Text -> IO ()
-getPlayerByName db name
-  = runSqlite db $ do
-  players <- selectList [DbPlayerDisplayName ==. name] []
-  liftIO $ print players
-
-
-deletePlayer :: Text -> DbPlayer -> IO ()
-deletePlayer db dbPlayer
-  = runSqlite db $ do
-    return ()

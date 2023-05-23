@@ -34,6 +34,9 @@ executable sc2-gm-ladder-backend
                  , persistent-sqlite
                  , persistent-template
                  , servant
+                 , servant-server
+                 , wai
+                 , warp
                  , hspec
                  , http-client
                  , http-conduit
@@ -68,6 +71,9 @@ library
                  , persistent-sqlite
                  , persistent-template
                  , servant
+                 , servant-server
+                 , wai
+                 , warp
                  , hspec
                  , http-client
                  , http-conduit
