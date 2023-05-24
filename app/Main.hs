@@ -19,7 +19,6 @@ import DbEntities ( DbPlayer
 
 import DbQueries ( insertDbPlayers
                  , getPlayersByRegion
-                 , getPlayerByName
                  )
 
 import Api (runKrServer)

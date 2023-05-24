@@ -4,7 +4,6 @@ module ConvertEntities ( toPlayers
                        , toDbPlayerFromTuple
                        , fromDbToPlayer
                        , fromDbToPlayerInfo
-                       , fromDbToApiPlayer
                        , fromEntityToDbPlayer
                        ) where
 
@@ -13,12 +12,11 @@ import Entities ( LadderTeams(..)
                 , PlayerInfo(..)
                 )
 
-import ApiEntities (ApiPlayer(..))
-
 import DbEntities ( DbPlayer(..)
                   , Entity(..)
                   , EntityField(..)
                   )
+
 import Database.Persist.Sqlite (entityValues)
 
 
@@ -27,6 +25,9 @@ toPlayers = ladderTeams
 
 toPlayerInfo :: Player -> [PlayerInfo]
 toPlayerInfo = teamMembers
+
+toDbPlayerFromTuple :: (Player, PlayerInfo) -> DbPlayer
+toDbPlayerFromTuple (a, b) = toDbPlayer a b
 
 toDbPlayer :: Player -> PlayerInfo -> DbPlayer
 toDbPlayer player playerInfo
@@ -43,9 +44,6 @@ toDbPlayer player playerInfo
   , dbPlayerClanTag = clanTag playerInfo
   , dbPlayerFavoriteRace = favoriteRace playerInfo
   }
-
-toDbPlayerFromTuple :: (Player, PlayerInfo) -> DbPlayer
-toDbPlayerFromTuple (a, b) = toDbPlayer a b
 
 fromDbToPlayer :: DbPlayer -> PlayerInfo -> Player
 fromDbToPlayer dbPlayer playerInfo
@@ -67,22 +65,6 @@ fromDbToPlayerInfo dbPlayer
   , displayName = dbPlayerDisplayName dbPlayer
   , clanTag = dbPlayerClanTag dbPlayer
   , favoriteRace = dbPlayerFavoriteRace dbPlayer
-  }
-
-fromDbToApiPlayer :: DbPlayer -> ApiPlayer
-fromDbToApiPlayer dbPlayer
-  = ApiPlayer
-  { apiPreviousRank = dbPlayerPreviousRank dbPlayer
-  , apiPoints = dbPlayerPoints dbPlayer
-  , apiWins = dbPlayerWins dbPlayer
-  , apiLosses = dbPlayerLosses dbPlayer
-  , apiMmr = dbPlayerMmr dbPlayer
-  , apiJoinTimestamp = dbPlayerJoinTimestamp dbPlayer
-  , apiRealm = dbPlayerRealm dbPlayer
-  , apiRegion = dbPlayerRegion dbPlayer
-  , apiDisplayName = dbPlayerDisplayName dbPlayer
-  , apiClanTag = dbPlayerClanTag dbPlayer
-  , apiFavoriteRace = dbPlayerFavoriteRace dbPlayer
   }
 
 fromEntityToDbPlayer :: Entity DbPlayer -> DbPlayer

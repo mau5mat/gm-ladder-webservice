@@ -6,11 +6,12 @@ import Secrets (starcraftClientToken)
 
 
 createUrlWithRegion :: String -> String
-createUrlWithRegion id = baseUrl
-                      <> grandmasterPath
-                      <> regionIdToString id
-                      <> accessTokenParam
-                      <> starcraftClientToken
+createUrlWithRegion id
+  = baseUrl
+  <> grandmasterPath
+  <> regionIdToString id
+  <> accessTokenParam
+  <> starcraftClientToken
 
 baseUrl :: String
 baseUrl = "https://us.api.blizzard.com"

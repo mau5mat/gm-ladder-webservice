@@ -55,9 +55,9 @@ library
 
     exposed-modules: BattleNet
                    , DbQueries
+                   , Domain
                    , Entities
                    , DbEntities
-                   , ApiEntities
                    , ConvertEntities
                    , Network
                    , Api

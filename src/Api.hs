@@ -8,32 +8,29 @@
 
 module Api (runKrServer) where
 
-import DbQueries ( getPlayerByName
-                 , getPlayersByRegion
-                 , getHighestMMRPlayer
-                 , getPlayerWithHighestWinRate
-                 )
-
-import qualified Data.Aeson.Parser
-import Data.Aeson
-import Data.Aeson.Types
-import Data.List
-import Data.Maybe
-import Data.Proxy
-import Data.Text (Text)
-import Control.Monad.IO.Class (liftIO)
-
-import Servant.API
-import Servant.Server
-
 import DbEntities ( DbPlayer(..)
                   , Entity(..)
                   )
 
-import Network.Wai
-import Network.Wai.Handler.Warp
+import DbQueries (getPlayersByRegion)
 
-import GHC.Generics
+import Domain ( getPlayerByName
+              , getHighestMMRPlayer
+              , getPlayerWithHighestWinRate
+              )
+
+import Servant.API
+import Servant.Server
+
+import Network.Wai.Handler.Warp ( Port
+                                , run)
+import Network.Wai
+
+import Data.Text (Text)
+import Data.Proxy
+
+import Control.Monad.IO.Class (liftIO)
+
 
 runKrServer :: Port -> IO ()
 runKrServer port = run port krApp
