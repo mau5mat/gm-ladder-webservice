@@ -6,7 +6,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE OverloadedStrings          #-}
 
-module Api where
+module Api (runKrServer) where
 
 import DbQueries ( getPlayerByName
                  , getPlayersByRegion
@@ -35,15 +35,18 @@ import Network.Wai.Handler.Warp
 
 import GHC.Generics
 
---runKrServer :: Port -> IO ()
---runKrServer port = run port krApp
+runKrServer :: Port -> IO ()
+runKrServer port = run port krApp
 
---krApp :: Application
---krApp = serve krGmAPI krGmServer
+krApp :: Application
+krApp = serve krGmAPI krGmServer
 
 krGmServer :: Server KrGmApi
 krGmServer
-  = allKrPlayers :<|> krPlayerByName :<|> krPlayerHighestWinrate :<|> krPlayerHighestMmr
+  = allKrPlayers
+  :<|> krPlayerByName
+  :<|> krPlayerHighestWinrate
+  :<|> krPlayerHighestMmr
 
 krGmAPI :: Proxy KrGmApi
 krGmAPI = Proxy

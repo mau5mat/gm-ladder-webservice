@@ -22,10 +22,12 @@ import DbQueries ( insertDbPlayers
                  , getPlayerByName
                  )
 
+import Api (runKrServer)
+
 import Data.Text (Text)
 
 main :: IO ()
-main = runApp
+main = runKrServer 8081
 
 -- just testing here for now
 runApp :: IO ()
