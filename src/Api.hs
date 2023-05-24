@@ -26,7 +26,9 @@ import Data.Text (Text)
 import Servant.API
 import Servant.Server
 
-import ApiEntities (ApiPlayer(..))
+import DbEntities ( DbPlayer(..)
+                  , Entity(..)
+                  )
 
 import Network.Wai
 import Network.Wai.Handler.Warp
@@ -46,10 +48,10 @@ krGmAPI :: Proxy KrGmApi
 krGmAPI = Proxy
 
 type KrGmApi
-  = "gm-ladder" :> "kr" :> "players" :> Get '[JSON] [ApiPlayer]
-  :<|> "gm-ladder" :> "kr" :> "player" :> Capture "name" String :> Get '[JSON] ApiPlayer
-  :<|> "gm-ladder" :> "kr" :> "player" :> "highest-win-rate" :> Get '[JSON] ApiPlayer
-  :<|> "gm-ladder" :> "kr" :> "player" :> "highest-mmr" :> Get '[JSON] ApiPlayer
+  = "gm-ladder" :> "kr" :> "players" :> Get '[JSON] [Entity DbPlayer]
+  :<|> "gm-ladder" :> "kr" :> "player" :> Capture "name" String :> Get '[JSON] (Entity DbPlayer)
+  :<|> "gm-ladder" :> "kr" :> "player" :> "highest-win-rate" :> Get '[JSON] (Entity DbPlayer)
+  :<|> "gm-ladder" :> "kr" :> "player" :> "highest-mmr" :> Get '[JSON] (Entity DbPlayer)
 
 
 --runNaServer :: Port -> IO ()
@@ -65,10 +67,10 @@ naGmAPI :: Proxy NaGmApi
 naGmAPI = Proxy
 
 type NaGmApi
-  = "gm-ladder" :> "na" :> "players" :> Get '[JSON] [ApiPlayer]
-  :<|> "gm-ladder" :> "na" :> "player" :> Capture "name" String :> Get '[JSON] ApiPlayer
-  :<|> "gm-ladder" :> "na" :> "player" :> "highest-win-rate" :> Get '[JSON] ApiPlayer
-  :<|> "gm-ladder" :> "na" :> "player" :> "highest-mmr" :> Get '[JSON] ApiPlayer
+  = "gm-ladder" :> "na" :> "players" :> Get '[JSON] [Entity DbPlayer]
+  :<|> "gm-ladder" :> "na" :> "player" :> Capture "name" String :> Get '[JSON] (Entity DbPlayer)
+  :<|> "gm-ladder" :> "na" :> "player" :> "highest-win-rate" :> Get '[JSON] (Entity DbPlayer)
+  :<|> "gm-ladder" :> "na" :> "player" :> "highest-mmr" :> Get '[JSON] (Entity DbPlayer)
 
 
 --runEuServer :: Port -> IO ()
@@ -84,7 +86,7 @@ euGmAPI :: Proxy EuGmApi
 euGmAPI = Proxy
 
 type EuGmApi
-  = "gm-ladder" :> "eu" :> "players" :> Get '[JSON] [ApiPlayer]
-  :<|> "gm-ladder" :> "eu" :> "player" :> Capture "name" String :> Get '[JSON] ApiPlayer
-  :<|> "gm-ladder" :> "eu" :> "player" :> "highest-win-rate" :> Get '[JSON] ApiPlayer
-  :<|> "gm-ladder" :> "eu" :> "player" :> "highest-mmr" :> Get '[JSON] ApiPlayer
+  = "gm-ladder" :> "eu" :> "players" :> Get '[JSON] [Entity DbPlayer]
+  :<|> "gm-ladder" :> "eu" :> "player" :> Capture "name" String :> Get '[JSON] (Entity DbPlayer)
+  :<|> "gm-ladder" :> "eu" :> "player" :> "highest-win-rate" :> Get '[JSON] (Entity DbPlayer)
+  :<|> "gm-ladder" :> "eu" :> "player" :> "highest-mmr" :> Get '[JSON] (Entity DbPlayer)

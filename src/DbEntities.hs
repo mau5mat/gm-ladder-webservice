@@ -14,6 +14,7 @@
 {-# LANGUAGE FlexibleInstances          #-}
 
 module DbEntities ( DbPlayer(..)
+                  , Entity(..)
                   , EntityField(..)
                   , migrateDbEntity
                   ) where
