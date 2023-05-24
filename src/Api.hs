@@ -4,8 +4,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE OverloadedStrings #-}
-
+{-# LANGUAGE OverloadedStrings          #-}
 
 module Api where
 
@@ -22,6 +21,7 @@ import Data.List
 import Data.Maybe
 import Data.Proxy
 import Data.Text (Text)
+import Control.Monad.IO.Class (liftIO)
 
 import Servant.API
 import Servant.Server
@@ -42,16 +42,37 @@ import GHC.Generics
 --krApp = serve krGmAPI krGmServer
 
 krGmServer :: Server KrGmApi
-krGmServer = undefined
+krGmServer
+  = allKrPlayers :<|> krPlayerByName :<|> krPlayerHighestWinrate :<|> krPlayerHighestMmr
 
 krGmAPI :: Proxy KrGmApi
 krGmAPI = Proxy
 
 type KrGmApi
-  = "gm-ladder" :> "kr" :> "players" :> Get '[JSON] [Entity DbPlayer]
-  :<|> "gm-ladder" :> "kr" :> "player" :> Capture "name" String :> Get '[JSON] (Entity DbPlayer)
-  :<|> "gm-ladder" :> "kr" :> "player" :> "highest-win-rate" :> Get '[JSON] (Entity DbPlayer)
-  :<|> "gm-ladder" :> "kr" :> "player" :> "highest-mmr" :> Get '[JSON] (Entity DbPlayer)
+  = "gm-ladder" :> "kr" :> "players" :> Get '[JSON] [DbPlayer]
+  :<|> "gm-ladder" :> "kr" :> "player" :> Capture "name" Text :> Get '[JSON] (Maybe DbPlayer)
+  :<|> "gm-ladder" :> "kr" :> "player" :> "highest-win-rate" :> Get '[JSON] (Maybe DbPlayer)
+  :<|> "gm-ladder" :> "kr" :> "player" :> "highest-mmr" :> Get '[JSON] (Maybe DbPlayer)
+
+allKrPlayers :: Handler [DbPlayer]
+allKrPlayers = do
+  players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
+  return players
+
+krPlayerByName :: Text -> Handler (Maybe DbPlayer)
+krPlayerByName name = do
+  players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
+  return $ getPlayerByName players name
+
+krPlayerHighestWinrate :: Handler (Maybe DbPlayer)
+krPlayerHighestWinrate = do
+  players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
+  return $ getPlayerWithHighestWinRate players
+
+krPlayerHighestMmr :: Handler (Maybe DbPlayer)
+krPlayerHighestMmr = do
+  players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
+  return $ getHighestMMRPlayer players
 
 
 --runNaServer :: Port -> IO ()

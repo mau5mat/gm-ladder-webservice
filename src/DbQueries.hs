@@ -11,7 +11,7 @@ module DbQueries ( insertDbPlayers
                  , getHighestMMRPlayer
                  ) where
 
-import ConvertEntities ()
+import ConvertEntities (fromEntityToDbPlayer)
 
 import Database.Persist
 import Database.Persist.TH
@@ -35,20 +35,22 @@ import Data.Maybe ( catMaybes
                   )
 
 import Data.Text (Text)
+import Control.Monad.Except (MonadError(throwError))
+import Servant (err404)
 
+
+getPlayersByRegion :: Text -> Int -> IO [DbPlayer]
+getPlayersByRegion db region
+  = runSqlite db $ do
+  players <- selectList [DbPlayerRegion ==. region] []
+
+  liftIO $ return $ fmap fromEntityToDbPlayer players
 
 insertDbPlayers :: Text -> [DbPlayer] -> IO ()
 insertDbPlayers db entities
   = runSqlite db $ do
     players <- mapM insert entities
     liftIO $ print players
-
-getPlayersByRegion :: Text -> Int -> IO [Entity DbPlayer]
-getPlayersByRegion db region
-  = runSqlite db $ do
-  players <- selectList [DbPlayerRegion ==. region] []
-
-  liftIO $ return players
 
 getPlayerByName :: [DbPlayer] -> Text -> Maybe DbPlayer
 getPlayerByName dbPlayers name

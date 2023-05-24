@@ -20,7 +20,6 @@ import DbEntities ( DbPlayer
 import DbQueries ( insertDbPlayers
                  , getPlayersByRegion
                  , getPlayerByName
-                 , deletePlayer
                  )
 
 import Data.Text (Text)
@@ -42,8 +41,8 @@ runApp = do
 
   --insertDbPlayers "players.sqlite3" dbPlayers
 
-  --getPlayersByRegion "players.sqlite3" 1
+  getPlayersByRegion "players.sqlite3" 1
 
-  getPlayerByName "players.sqlite3" "MillForGG"
+  --getPlayerByName "players.sqlite3" "MillForGG"
 
   return ()

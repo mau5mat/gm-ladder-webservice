@@ -5,6 +5,7 @@ module ConvertEntities ( toPlayers
                        , fromDbToPlayer
                        , fromDbToPlayerInfo
                        , fromDbToApiPlayer
+                       , fromEntityToDbPlayer
                        ) where
 
 import Entities ( LadderTeams(..)
@@ -14,7 +15,11 @@ import Entities ( LadderTeams(..)
 
 import ApiEntities (ApiPlayer(..))
 
-import DbEntities (DbPlayer(..))
+import DbEntities ( DbPlayer(..)
+                  , Entity(..)
+                  , EntityField(..)
+                  )
+import Database.Persist.Sqlite (entityValues)
 
 
 toPlayers :: LadderTeams -> [Player]
@@ -79,3 +84,6 @@ fromDbToApiPlayer dbPlayer
   , apiClanTag = dbPlayerClanTag dbPlayer
   , apiFavoriteRace = dbPlayerFavoriteRace dbPlayer
   }
+
+fromEntityToDbPlayer :: Entity DbPlayer -> DbPlayer
+fromEntityToDbPlayer = entityVal
