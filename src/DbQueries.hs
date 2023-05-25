@@ -28,4 +28,5 @@ insertDbPlayers :: Text -> [DbPlayer] -> IO ()
 insertDbPlayers db entities
   = runSqlite db $ do
     players <- mapM insert entities
+
     liftIO $ print players
