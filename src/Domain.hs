@@ -2,7 +2,7 @@
 
 module Domain ( getPlayerByName
               , getPlayerWithHighestWinRate
-              , getHighestMMRPlayer
+              , getPlayerHighestMmr
               ) where
 
 import DbEntities (DbPlayer(..))
@@ -23,8 +23,8 @@ getPlayerByName dbPlayers name
   where namedPlayer
           = filter (\player -> dbPlayerDisplayName player == name) dbPlayers
 
-getHighestMMRPlayer :: [DbPlayer] -> Maybe DbPlayer
-getHighestMMRPlayer dbPlayers
+getPlayerHighestMmr :: [DbPlayer] -> Maybe DbPlayer
+getPlayerHighestMmr dbPlayers
   = case highestMMRPlayer of
       []  -> Nothing
       [x] -> Just x

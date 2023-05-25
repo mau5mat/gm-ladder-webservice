@@ -21,29 +21,72 @@ import DbQueries ( insertDbPlayers
                  , getPlayersByRegion
                  )
 
-import Api (runKrServer)
+import Domain ( getPlayerByName
+              , getPlayerHighestMmr
+              , getPlayerWithHighestWinRate)
+
+import Api ( runKrServer
+           , runNaServer
+           , runEuServer
+           )
 
 import Data.Text (Text)
 
+import Control.Monad.IO.Class (liftIO)
+
+
 main :: IO ()
-main = runKrServer 8081
+main = do
+  players <- liftIO $ getPlayersByRegion "players.sqlite3" 2
 
--- just testing here for now
-runApp :: IO ()
-runApp = do
-  --na <- getGrandmastersFromRegion "NA"
+  let player = getPlayerWithHighestWinRate players
 
-  --let naPlayers = toPlayers na
-  --let naPlayerInfos = concatMap toPlayerInfo naPlayers
-  --let combinedPlayerData = zip naPlayers naPlayerInfos
-  --let dbPlayers = fmap toDbPlayerFromTuple combinedPlayerData
+  print player
 
-  --migrateDbEntity "players.sqlite3"
+runServers :: IO ()
+runServers = do
+    runKrServer 8081
+    runNaServer 8081
+    runEuServer 8081
 
-  --insertDbPlayers "players.sqlite3" dbPlayers
+naData :: IO ()
+naData = do
+  na <- getGrandmastersFromRegion "NA"
 
-  getPlayersByRegion "players.sqlite3" 1
+  let naPlayers = toPlayers na
+  let naPlayerInfos = concatMap toPlayerInfo naPlayers
+  let combinedPlayerData = zip naPlayers naPlayerInfos
+  let dbPlayers = fmap toDbPlayerFromTuple combinedPlayerData
 
-  --getPlayerByName "players.sqlite3" "MillForGG"
+  migrateDbEntity "players.sqlite3"
+  insertDbPlayers "players.sqlite3" dbPlayers
+
+  return ()
+
+euData :: IO ()
+euData = do
+  eu <- getGrandmastersFromRegion "EU"
+
+  let euPlayers = toPlayers eu
+  let euPlayerInfos = concatMap toPlayerInfo euPlayers
+  let combinedPlayerData = zip euPlayers euPlayerInfos
+  let dbPlayers = fmap toDbPlayerFromTuple combinedPlayerData
+
+  migrateDbEntity "players.sqlite3"
+  insertDbPlayers "players.sqlite3" dbPlayers
+
+  return ()
+
+krData :: IO ()
+krData = do
+  kr <- getGrandmastersFromRegion "KR"
+
+  let krPlayers = toPlayers kr
+  let krPlayerInfos = concatMap toPlayerInfo krPlayers
+  let combinedPlayerData = zip krPlayers krPlayerInfos
+  let dbPlayers = fmap toDbPlayerFromTuple combinedPlayerData
+
+  migrateDbEntity "players.sqlite3"
+  insertDbPlayers "players.sqlite3" dbPlayers
 
   return ()
