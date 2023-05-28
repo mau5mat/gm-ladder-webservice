@@ -1,9 +1,9 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Config ( App
-              , AppT(..)
-              ) where
+module App ( App
+           , AppT(..)
+           ) where
 
 import Control.Monad.Except ( MonadError
                             , ExceptT

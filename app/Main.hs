@@ -26,12 +26,7 @@ import Domain ( getPlayerByName
               , getPlayerHighestMmr
               , getPlayerWithHighestWinRate)
 
-import Api ( runKrPort
-           , runNaPort
-           , runEuPort
-           )
-
-import Config (AppT(..))
+import Api (runGmPort)
 
 import Data.Text (Text)
 
@@ -41,23 +36,11 @@ import Servant (throwError, err401)
 
 
 main :: IO ()
-main = return ()
+main = runGmServer
 
-runTests :: AppT IO DbPlayer
-runTests = do
-  players <- liftIO $ getPlayersByRegion "players.sqlite3" 2
-
-  let player = getPlayerByName_ players "Clem"
-
-  case player of
-    Nothing -> throwError err401
-    Just x  -> return x
-
-runServers :: IO ()
-runServers = do
-    runKrPort 8081
-    runNaPort 8081
-    runEuPort 8081
+runGmServer :: IO ()
+runGmServer = do
+    runGmPort 8081
 
 naData :: IO ()
 naData = do

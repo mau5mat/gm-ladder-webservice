@@ -6,10 +6,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE OverloadedStrings          #-}
 
-module Api ( runKrPort
-           , runNaPort
-           , runEuPort
-           ) where
+module Api (runGmPort) where
 
 import DbEntities ( DbPlayer(..)
                   , Entity(..)
@@ -35,27 +32,55 @@ import Data.Proxy
 import Control.Monad.Reader (MonadIO)
 import Control.Monad.IO.Class (liftIO)
 
-import Config ( AppT(..)
-              , App(..)
-              )
+import App (AppT(..))
 
 import Servant (throwError)
+
+
+
+appToHandler :: AppT IO a -> Handler a
+appToHandler appT = Handler $ runApp appT
+
+
+runGmPort :: Port -> IO ()
+runGmPort port = run port gmApp
+
+gmApp :: Application
+gmApp = serve gmAPI gmServer
+
+gmAPI :: Proxy GmApi
+gmAPI = Proxy
+
+gmServer :: Server GmApi
+gmServer = hoistServer gmAPI appToHandler allGmRoutes
+
+allGmRoutes :: MonadIO m => ServerT GmApi (AppT m)
+allGmRoutes
+  = naGmRoutes
+  :<|> euGmRoutes
+  :<|> krGmRoutes
+
+type GmApi = NaGmApi :<|> EuGmApi :<|> KrGmApi
+
 
 runNaPort :: Port -> IO ()
 runNaPort port = run port naApp
 
 naApp :: Application
-naApp = serve naGmAPI naGmServer
+naApp = serve naGmAPI naServer
 
-naGmServer :: Server NaGmApi
-naGmServer
+naGmAPI :: Proxy NaGmApi
+naGmAPI = Proxy
+
+naServer :: Server NaGmApi
+naServer = hoistServer naGmAPI appToHandler naGmRoutes
+
+naGmRoutes :: MonadIO m => ServerT EuGmApi (AppT m)
+naGmRoutes
   = allNaPlayers
   :<|> naPlayerByName
   :<|> naPlayerHighestWinrate
   :<|> naPlayerHighestMmr
-
-naGmAPI :: Proxy NaGmApi
-naGmAPI = Proxy
 
 type NaGmApi
   = "gm-ladder" :> "na" :> "players" :> Get '[JSON] [DbPlayer]
@@ -63,28 +88,41 @@ type NaGmApi
   :<|> "gm-ladder" :> "na" :> "player" :> "highest-win-rate" :> Get '[JSON] (Maybe DbPlayer)
   :<|> "gm-ladder" :> "na" :> "player" :> "highest-mmr" :> Get '[JSON] (Maybe DbPlayer)
 
-allNaPlayers :: Handler [DbPlayer]
+allNaPlayers :: MonadIO m => AppT m [DbPlayer]
 allNaPlayers = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
   return players
 
-naPlayerByName :: Text -> Handler (Maybe DbPlayer)
+naPlayerByName :: MonadIO m => Text -> AppT m (Maybe DbPlayer)
 naPlayerByName name = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
-  return $ getPlayerByName players name
 
-naPlayerHighestWinrate :: Handler (Maybe DbPlayer)
+  let player = getPlayerByName players name
+
+  case player of
+    Nothing -> throwError err401
+    Just p  -> return $ Just p
+
+naPlayerHighestWinrate :: MonadIO m => AppT m (Maybe DbPlayer)
 naPlayerHighestWinrate = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
-  return $ getPlayerWithHighestWinRate players
 
-naPlayerHighestMmr :: Handler (Maybe DbPlayer)
+  let player = getPlayerWithHighestWinRate players
+
+  case player of
+    Nothing -> throwError err401
+    Just p  -> return $ Just p
+
+naPlayerHighestMmr :: MonadIO m => AppT m (Maybe DbPlayer)
 naPlayerHighestMmr = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
-  return $ getPlayerHighestMmr players
 
-appToHandler :: AppT IO a -> Handler a
-appToHandler appT = Handler $ runApp appT
+  let player = getPlayerHighestMmr players
+
+  case player of
+    Nothing -> throwError err401
+    Just x  -> return $ Just x
+
 
 runEuPort :: Port -> IO ()
 runEuPort port = run port euApp
@@ -148,21 +186,26 @@ euPlayerHighestMmr = do
     Nothing -> throwError err401
     Just x  -> return $ Just x
 
+
 runKrPort :: Port -> IO ()
 runKrPort port = run port krApp
 
 krApp :: Application
-krApp = serve krGmAPI krGmServer
+krApp = serve krGmAPI krServer
 
-krGmServer :: Server KrGmApi
-krGmServer
+
+krGmAPI :: Proxy KrGmApi
+krGmAPI = Proxy
+
+krServer :: Server EuGmApi
+krServer = hoistServer krGmAPI appToHandler krGmRoutes
+
+krGmRoutes :: MonadIO m => ServerT KrGmApi (AppT m)
+krGmRoutes
   = allKrPlayers
   :<|> krPlayerByName
   :<|> krPlayerHighestWinrate
   :<|> krPlayerHighestMmr
-
-krGmAPI :: Proxy KrGmApi
-krGmAPI = Proxy
 
 type KrGmApi
   = "gm-ladder" :> "kr" :> "players" :> Get '[JSON] [DbPlayer]
@@ -170,22 +213,39 @@ type KrGmApi
   :<|> "gm-ladder" :> "kr" :> "player" :> "highest-win-rate" :> Get '[JSON] (Maybe DbPlayer)
   :<|> "gm-ladder" :> "kr" :> "player" :> "highest-mmr" :> Get '[JSON] (Maybe DbPlayer)
 
-allKrPlayers :: Handler [DbPlayer]
+allKrPlayers :: MonadIO m => AppT m [DbPlayer]
 allKrPlayers = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
   return players
 
-krPlayerByName :: Text -> Handler (Maybe DbPlayer)
+krPlayerByName :: MonadIO m => Text -> AppT m (Maybe DbPlayer)
 krPlayerByName name = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
-  return $ getPlayerByName players name
 
-krPlayerHighestWinrate :: Handler (Maybe DbPlayer)
+  let player = getPlayerByName players name
+
+  case player of
+    Nothing -> throwError err401
+    Just x  -> return $ Just x
+
+
+krPlayerHighestWinrate :: MonadIO m => AppT m (Maybe DbPlayer)
 krPlayerHighestWinrate = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
-  return $ getPlayerWithHighestWinRate players
 
-krPlayerHighestMmr :: Handler (Maybe DbPlayer)
+  let player = getPlayerWithHighestWinRate players
+
+  case player of
+    Nothing -> throwError err401
+    Just x  -> return $ Just x
+
+
+krPlayerHighestMmr :: MonadIO m => AppT m (Maybe DbPlayer)
 krPlayerHighestMmr = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
-  return $ getPlayerHighestMmr players
+
+  let player = getPlayerHighestMmr players
+
+  case player of
+    Nothing -> throwError err401
+    Just x  -> return $ Just x

@@ -53,8 +53,8 @@ library
     hs-source-dirs: src
                   , config
 
-    exposed-modules: BattleNet
-                   , Config
+    exposed-modules: App
+                   , BattleNet
                    , DbQueries
                    , Domain
                    , Entities

@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Secrets ( starcraftClientToken
-               , dbName) where
+               , dbName
+               ) where
 
 import Data.Text (Text)
 
@@ -10,7 +11,7 @@ import Data.Text (Text)
 -- curl -u 4c5dd1ce08a248e1ada9a37928f96eac:Z53FCIeMfNwTaLZ55sQPHSGC2PNV1y62 -d grant_type=client_credentials https://oauth.battle.net/token
 
 starcraftClientToken :: String
-starcraftClientToken = "EUxZCBMTx147j0NvDxnT6Aqautj19xX5Qy"
+starcraftClientToken = "EUCx7y8Yss2qLvL4Wad33a5PmAADpVdCx3"
 
 dbName :: Text
 dbName = "players.sqlite3"
