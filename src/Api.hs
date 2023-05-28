@@ -37,7 +37,6 @@ import App (AppT(..))
 import Servant (throwError)
 
 
-
 appToHandler :: AppT IO a -> Handler a
 appToHandler appT = Handler $ runApp appT
 

@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings          #-}
 
 module Domain ( getPlayerByName
-              , getPlayerByName_
               , getPlayerWithHighestWinRate
               , getPlayerHighestMmr
               ) where
@@ -19,15 +18,6 @@ import Data.Text (Text)
 getPlayerByName :: [DbPlayer] -> Text -> Maybe DbPlayer
 getPlayerByName dbPlayers name
   = case namedPlayer of
-      [] -> Nothing
-      [x] -> Just x
-  where namedPlayer
-          = filter (\player -> dbPlayerDisplayName player == name) dbPlayers
-
-getPlayerByName_ :: [DbPlayer] -> Text -> Maybe DbPlayer
-getPlayerByName_ dbPlayers name
-  = do
-  case namedPlayer of
       [] -> Nothing
       [x] -> Just x
   where namedPlayer

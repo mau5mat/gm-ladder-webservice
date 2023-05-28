@@ -4,8 +4,9 @@ module BattleNet (createUrlWithRegion) where
 
 import Secrets (starcraftClientToken)
 
+import Data.Text (Text)
 
-createUrlWithRegion :: String -> String
+createUrlWithRegion :: Text -> Text
 createUrlWithRegion id
   = baseUrl
   <> grandmasterPath
@@ -13,16 +14,16 @@ createUrlWithRegion id
   <> accessTokenParam
   <> starcraftClientToken
 
-baseUrl :: String
+baseUrl :: Text
 baseUrl = "https://us.api.blizzard.com"
 
-grandmasterPath :: String
+grandmasterPath :: Text
 grandmasterPath = "/sc2/ladder/grandmaster/"
 
-accessTokenParam :: String
+accessTokenParam :: Text
 accessTokenParam = "?access_token="
 
-regionIdToString :: String -> String
+regionIdToString :: Text -> Text
 regionIdToString regionId =
   case regionId of
     "NA" -> "1"

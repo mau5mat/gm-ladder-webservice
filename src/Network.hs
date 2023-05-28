@@ -1,20 +1,23 @@
 module Network (getGrandmastersFromRegion) where
 
+import Data.Text ( Text
+                 , unpack
+                 )
+
 import Entities (LadderTeams)
 
 import BattleNet (createUrlWithRegion)
 
 import Network.HTTP.Simple
 
-
-getGrandmastersFromRegion :: String -> IO LadderTeams
+getGrandmastersFromRegion :: Text -> IO LadderTeams
 getGrandmastersFromRegion region = do
   response <- httpJSON $ ladderTeamsRequestUrl region
 
   pure $ decodeLadderTeams response
 
-ladderTeamsRequestUrl :: String -> Request
-ladderTeamsRequestUrl regionId = parseRequest_ $ createUrlWithRegion regionId
+ladderTeamsRequestUrl :: Text -> Request
+ladderTeamsRequestUrl regionId = parseRequest_ . unpack $ createUrlWithRegion regionId
 
 decodeLadderTeams :: Response LadderTeams -> LadderTeams
 decodeLadderTeams = getResponseBody
