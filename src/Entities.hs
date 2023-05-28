@@ -37,7 +37,6 @@ data Player
 instance ToJSON Player
 instance FromJSON Player
 
--- Removed "id :: Int" here due to not knowing if Persistant generates an id in the db
 data PlayerInfo
   = PlayerInfo
   { realm :: Int
