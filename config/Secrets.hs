@@ -1,6 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Secrets (starcraftClientToken) where
+module Secrets ( starcraftClientToken
+               , dbName) where
+
+import Data.Text (Text)
 
 
 -- Use this to generate a token for the API calls, expires every 24hr
@@ -8,3 +11,6 @@ module Secrets (starcraftClientToken) where
 
 starcraftClientToken :: String
 starcraftClientToken = "EUxZCBMTx147j0NvDxnT6Aqautj19xX5Qy"
+
+dbName :: Text
+dbName = "players.sqlite3"

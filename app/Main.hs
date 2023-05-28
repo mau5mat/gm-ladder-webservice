@@ -22,32 +22,42 @@ import DbQueries ( insertDbPlayers
                  )
 
 import Domain ( getPlayerByName
+              , getPlayerByName_
               , getPlayerHighestMmr
               , getPlayerWithHighestWinRate)
 
-import Api ( runKrServer
-           , runNaServer
-           , runEuServer
+import Api ( runKrPort
+           , runNaPort
+           , runEuPort
            )
+
+import Config (AppT(..))
 
 import Data.Text (Text)
 
+import Control.Monad.Reader (MonadIO)
 import Control.Monad.IO.Class (liftIO)
+import Servant (throwError, err401)
 
 
 main :: IO ()
-main = do
+main = return ()
+
+runTests :: AppT IO DbPlayer
+runTests = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 2
 
-  let player = getPlayerWithHighestWinRate players
+  let player = getPlayerByName_ players "Clem"
 
-  print player
+  case player of
+    Nothing -> throwError err401
+    Just x  -> return x
 
 runServers :: IO ()
 runServers = do
-    runKrServer 8081
-    runNaServer 8081
-    runEuServer 8081
+    runKrPort 8081
+    runNaPort 8081
+    runEuPort 8081
 
 naData :: IO ()
 naData = do

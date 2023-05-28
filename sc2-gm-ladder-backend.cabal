@@ -54,6 +54,7 @@ library
                   , config
 
     exposed-modules: BattleNet
+                   , Config
                    , DbQueries
                    , Domain
                    , Entities
