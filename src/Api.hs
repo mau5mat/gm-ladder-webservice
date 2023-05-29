@@ -6,7 +6,12 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE OverloadedStrings          #-}
 
-module Api (runGmPort) where
+module Api ( runGmPort
+           , runKrPort
+           , naPlayerByName
+           , naPlayerHighestMmr
+           , naPlayerHighestWinrate
+           ) where
 
 import DbEntities ( DbPlayer(..)
                   , Entity(..)
@@ -32,7 +37,9 @@ import Data.Proxy
 import Control.Monad.Reader (MonadIO)
 import Control.Monad.IO.Class (liftIO)
 
-import App (AppT(..))
+import App ( AppT(..)
+           , App(..)
+           )
 
 import Servant (throwError)
 
@@ -57,9 +64,9 @@ allGmRoutes :: MonadIO m => ServerT GmApi (AppT m)
 allGmRoutes
   = naGmRoutes
   :<|> euGmRoutes
-  :<|> krGmRoutes
+  -- :<|> krGmRoutes
 
-type GmApi = NaGmApi :<|> EuGmApi :<|> KrGmApi
+type GmApi = NaGmApi :<|> EuGmApi -- :<|> KrGmApi
 
 
 runNaPort :: Port -> IO ()
@@ -83,44 +90,44 @@ naGmRoutes
 
 type NaGmApi
   = "gm-ladder" :> "na" :> "players" :> Get '[JSON] [DbPlayer]
-  :<|> "gm-ladder" :> "na" :> "player" :> Capture "name" Text :> Get '[JSON] (Maybe DbPlayer)
-  :<|> "gm-ladder" :> "na" :> "player" :> "highest-win-rate" :> Get '[JSON] (Maybe DbPlayer)
-  :<|> "gm-ladder" :> "na" :> "player" :> "highest-mmr" :> Get '[JSON] (Maybe DbPlayer)
+  :<|> "gm-ladder" :> "na" :> "player" :> Capture "name" Text :> Get '[JSON] DbPlayer
+  :<|> "gm-ladder" :> "na" :> "player" :> "highest-win-rate" :> Get '[JSON] DbPlayer
+  :<|> "gm-ladder" :> "na" :> "player" :> "highest-mmr" :> Get '[JSON] DbPlayer
 
 allNaPlayers :: MonadIO m => AppT m [DbPlayer]
 allNaPlayers = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
   return players
 
-naPlayerByName :: MonadIO m => Text -> AppT m (Maybe DbPlayer)
+naPlayerByName :: MonadIO m => Text -> AppT m DbPlayer
 naPlayerByName name = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
 
   let player = getPlayerByName players name
 
   case player of
-    Nothing -> throwError err401
-    Just p  -> return $ Just p
+    Nothing -> throwError err404
+    Just p  -> return p
 
-naPlayerHighestWinrate :: MonadIO m => AppT m (Maybe DbPlayer)
+naPlayerHighestWinrate :: MonadIO m => AppT m DbPlayer
 naPlayerHighestWinrate = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
 
   let player = getPlayerWithHighestWinRate players
 
   case player of
-    Nothing -> throwError err401
-    Just p  -> return $ Just p
+    Nothing -> throwError err404
+    Just p  -> return p
 
-naPlayerHighestMmr :: MonadIO m => AppT m (Maybe DbPlayer)
+naPlayerHighestMmr :: MonadIO m => AppT m DbPlayer
 naPlayerHighestMmr = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
 
   let player = getPlayerHighestMmr players
 
   case player of
-    Nothing -> throwError err401
-    Just x  -> return $ Just x
+    Nothing -> throwError err404
+    Just p  -> return p
 
 
 runEuPort :: Port -> IO ()
@@ -144,46 +151,46 @@ euGmRoutes
 
 type EuGmApi
   = "gm-ladder" :> "eu" :> "players" :> Get '[JSON] [DbPlayer]
-  :<|> "gm-ladder" :> "eu" :> "player" :> Capture "name" Text :> Get '[JSON] (Maybe DbPlayer)
-  :<|> "gm-ladder" :> "eu" :> "player" :> "highest-win-rate" :> Get '[JSON] (Maybe DbPlayer)
-  :<|> "gm-ladder" :> "eu" :> "player" :> "highest-mmr" :> Get '[JSON] (Maybe DbPlayer)
+  :<|> "gm-ladder" :> "eu" :> "player" :> Capture "name" Text :> Get '[JSON] DbPlayer
+  :<|> "gm-ladder" :> "eu" :> "player" :> "highest-win-rate" :> Get '[JSON] DbPlayer
+  :<|> "gm-ladder" :> "eu" :> "player" :> "highest-mmr" :> Get '[JSON] DbPlayer
 
 allEuPlayers :: MonadIO m => AppT m [DbPlayer]
 allEuPlayers = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 2
   return players
 
-euPlayerByName :: MonadIO m => Text -> AppT m (Maybe DbPlayer)
+euPlayerByName :: MonadIO m => Text -> AppT m DbPlayer
 euPlayerByName name = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 2
 
   let player = getPlayerByName players name
 
   case player of
-    Nothing -> throwError err401
-    Just x  -> return $ Just x
+    Nothing -> throwError err404
+    Just p  -> return p
 
 
-euPlayerHighestWinrate :: MonadIO m => AppT m (Maybe DbPlayer)
+euPlayerHighestWinrate :: MonadIO m => AppT m DbPlayer
 euPlayerHighestWinrate = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 2
 
   let player = getPlayerWithHighestWinRate players
 
   case player of
-    Nothing -> throwError err401
-    Just x  -> return $ Just x
+    Nothing -> throwError err404
+    Just p  -> return p
 
 
-euPlayerHighestMmr :: MonadIO m => AppT m (Maybe DbPlayer)
+euPlayerHighestMmr :: MonadIO m => AppT m DbPlayer
 euPlayerHighestMmr = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 2
 
   let player = getPlayerHighestMmr players
 
   case player of
-    Nothing -> throwError err401
-    Just x  -> return $ Just x
+    Nothing -> throwError err404
+    Just p  -> return p
 
 
 runKrPort :: Port -> IO ()
@@ -196,10 +203,10 @@ krApp = serve krGmAPI krServer
 krGmAPI :: Proxy KrGmApi
 krGmAPI = Proxy
 
-krServer :: Server EuGmApi
+krServer :: Server KrGmApi
 krServer = hoistServer krGmAPI appToHandler krGmRoutes
 
-krGmRoutes :: MonadIO m => ServerT KrGmApi (AppT m)
+krGmRoutes :: ServerT KrGmApi App
 krGmRoutes
   = allKrPlayers
   :<|> krPlayerByName
@@ -208,43 +215,43 @@ krGmRoutes
 
 type KrGmApi
   = "gm-ladder" :> "kr" :> "players" :> Get '[JSON] [DbPlayer]
-  :<|> "gm-ladder" :> "kr" :> "player" :> Capture "name" Text :> Get '[JSON] (Maybe DbPlayer)
-  :<|> "gm-ladder" :> "kr" :> "player" :> "highest-win-rate" :> Get '[JSON] (Maybe DbPlayer)
-  :<|> "gm-ladder" :> "kr" :> "player" :> "highest-mmr" :> Get '[JSON] (Maybe DbPlayer)
+  :<|> "gm-ladder" :> "kr" :> "player" :> Capture "name" Text :> Get '[JSON] DbPlayer
+  :<|> "gm-ladder" :> "kr" :> "player" :> "highest-win-rate" :> Get '[JSON] DbPlayer
+  :<|> "gm-ladder" :> "kr" :> "player" :> "highest-mmr" :> Get '[JSON] DbPlayer
 
-allKrPlayers :: MonadIO m => AppT m [DbPlayer]
+allKrPlayers ::App [DbPlayer]
 allKrPlayers = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
   return players
 
-krPlayerByName :: MonadIO m => Text -> AppT m (Maybe DbPlayer)
+krPlayerByName :: Text -> App DbPlayer
 krPlayerByName name = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
 
   let player = getPlayerByName players name
 
   case player of
-    Nothing -> throwError err401
-    Just x  -> return $ Just x
+    Nothing -> throwError err404
+    Just p  -> return p
 
 
-krPlayerHighestWinrate :: MonadIO m => AppT m (Maybe DbPlayer)
+krPlayerHighestWinrate :: App DbPlayer
 krPlayerHighestWinrate = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
 
   let player = getPlayerWithHighestWinRate players
 
   case player of
-    Nothing -> throwError err401
-    Just x  -> return $ Just x
+    Nothing -> throwError err404
+    Just p  -> return p
 
 
-krPlayerHighestMmr :: MonadIO m => AppT m (Maybe DbPlayer)
+krPlayerHighestMmr :: App DbPlayer
 krPlayerHighestMmr = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
 
   let player = getPlayerHighestMmr players
 
   case player of
-    Nothing -> throwError err401
-    Just x  -> return $ Just x
+    Nothing -> throwError err404
+    Just p  -> return p

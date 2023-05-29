@@ -19,7 +19,7 @@ getPlayerByName :: [DbPlayer] -> Text -> Maybe DbPlayer
 getPlayerByName dbPlayers name
   = case namedPlayer of
       [] -> Nothing
-      [x] -> Just x
+      (x:xs) -> Just x
   where namedPlayer
           = filter (\player -> dbPlayerDisplayName player == name) dbPlayers
 
@@ -27,7 +27,7 @@ getPlayerHighestMmr :: [DbPlayer] -> Maybe DbPlayer
 getPlayerHighestMmr dbPlayers
   = case highestMMRPlayer of
       []  -> Nothing
-      [x] -> Just x
+      (x:xs) -> Just x
   where highestMMRPlayer
           = filter (\player -> checkMMR player == maximum allMMRs) dbPlayers
         allMMRs
@@ -36,8 +36,8 @@ getPlayerHighestMmr dbPlayers
 getPlayerWithHighestWinRate :: [DbPlayer] -> Maybe DbPlayer
 getPlayerWithHighestWinRate dbPlayers
   = case highestWinPercentagePlayer of
-      []  -> Nothing
-      [x] -> Just x
+      []     -> Nothing
+      (x:xs) -> Just x
   where highestWinPercentagePlayer
           = filter (\player -> calculateWinPercentage (dbPlayerWins player) (dbPlayerLosses player) == maximum percentageWinRateList) dbPlayers
         percentageWinRateList
