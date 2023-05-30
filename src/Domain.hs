@@ -35,7 +35,7 @@ getPlayerWithHighestWinRate xs = Just (maximumBy (compare `on` playerWinPercenta
   playerWinPercentage p = calculateWinPercentage (dbPlayerWins p) (dbPlayerLosses p)
   calculateWinPercentage wins losses = show winPercent
     where totalPlayed
-            = fromIntegral wins + fromIntegral losses
+            = fromIntegral wins + fromIntegral losses :: Double
           winPercent
             = fromIntegral wins / totalPlayed * 100
 

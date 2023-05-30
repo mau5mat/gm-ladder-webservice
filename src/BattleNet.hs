@@ -7,10 +7,10 @@ import Secrets (starcraftClientToken)
 import Data.Text (Text)
 
 createUrlWithRegion :: Text -> Text
-createUrlWithRegion id
+createUrlWithRegion region
   = baseUrl
   <> grandmasterPath
-  <> regionIdToString id
+  <> regionIdToString region
   <> accessTokenParam
   <> starcraftClientToken
 

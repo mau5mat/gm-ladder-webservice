@@ -16,4 +16,4 @@ import Data.Text (Text)
 
 main :: IO ()
 main = do
-  runKrPort 8081
+  runGmPort 8081

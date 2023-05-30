@@ -37,11 +37,11 @@ import Data.Proxy
 import Control.Monad.Reader (MonadIO)
 import Control.Monad.IO.Class (liftIO)
 
-import App ( AppT(..)
-           , App(..)
-           )
-
 import Servant (throwError)
+
+import App ( AppT(..)
+           , App
+           )
 
 
 appToHandler :: AppT IO a -> Handler a
@@ -60,13 +60,13 @@ gmAPI = Proxy
 gmServer :: Server GmApi
 gmServer = hoistServer gmAPI appToHandler allGmRoutes
 
-allGmRoutes :: MonadIO m => ServerT GmApi (AppT m)
+allGmRoutes :: ServerT GmApi App
 allGmRoutes
   = naGmRoutes
   :<|> euGmRoutes
-  -- :<|> krGmRoutes
+  :<|> krGmRoutes
 
-type GmApi = NaGmApi :<|> EuGmApi -- :<|> KrGmApi
+type GmApi = NaGmApi :<|> EuGmApi :<|> KrGmApi
 
 
 runNaPort :: Port -> IO ()
@@ -81,23 +81,23 @@ naGmAPI = Proxy
 naServer :: Server NaGmApi
 naServer = hoistServer naGmAPI appToHandler naGmRoutes
 
-naGmRoutes :: MonadIO m => ServerT EuGmApi (AppT m)
+naGmRoutes :: ServerT EuGmApi App
 naGmRoutes
   = allNaPlayers
-  :<|> naPlayerByName
   :<|> naPlayerHighestWinrate
   :<|> naPlayerHighestMmr
+  :<|> naPlayerByName
 
 type NaGmApi
   = "gm-ladder" :> "na" :> "players" :> Get '[JSON] [DbPlayer]
-  :<|> "gm-ladder" :> "na" :> "player" :> Capture "name" Text :> Get '[JSON] DbPlayer
   :<|> "gm-ladder" :> "na" :> "player" :> "highest-win-rate" :> Get '[JSON] DbPlayer
   :<|> "gm-ladder" :> "na" :> "player" :> "highest-mmr" :> Get '[JSON] DbPlayer
+  :<|> "gm-ladder" :> "kr" :> "player" :> QueryParam' '[Required] "name" Text :> Get '[JSON] DbPlayer
 
 allNaPlayers :: MonadIO m => AppT m [DbPlayer]
 allNaPlayers = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
-  return players
+  liftIO $ return players
 
 naPlayerByName :: MonadIO m => Text -> AppT m DbPlayer
 naPlayerByName name = do
@@ -142,23 +142,25 @@ euGmAPI = Proxy
 euServer :: Server EuGmApi
 euServer = hoistServer euGmAPI appToHandler euGmRoutes
 
-euGmRoutes :: MonadIO m => ServerT EuGmApi (AppT m)
+euGmRoutes :: ServerT EuGmApi App
 euGmRoutes
   = allEuPlayers
-  :<|> euPlayerByName
   :<|> euPlayerHighestWinrate
   :<|> euPlayerHighestMmr
+  :<|> euPlayerByName
+
 
 type EuGmApi
   = "gm-ladder" :> "eu" :> "players" :> Get '[JSON] [DbPlayer]
-  :<|> "gm-ladder" :> "eu" :> "player" :> Capture "name" Text :> Get '[JSON] DbPlayer
   :<|> "gm-ladder" :> "eu" :> "player" :> "highest-win-rate" :> Get '[JSON] DbPlayer
   :<|> "gm-ladder" :> "eu" :> "player" :> "highest-mmr" :> Get '[JSON] DbPlayer
+  :<|> "gm-ladder" :> "kr" :> "player" :> QueryParam' '[Required] "name" Text :> Get '[JSON] DbPlayer
 
 allEuPlayers :: MonadIO m => AppT m [DbPlayer]
 allEuPlayers = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 2
-  return players
+
+  liftIO$ return players
 
 euPlayerByName :: MonadIO m => Text -> AppT m DbPlayer
 euPlayerByName name = do
@@ -170,7 +172,6 @@ euPlayerByName name = do
     Nothing -> throwError err404
     Just p  -> return p
 
-
 euPlayerHighestWinrate :: MonadIO m => AppT m DbPlayer
 euPlayerHighestWinrate = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 2
@@ -181,7 +182,6 @@ euPlayerHighestWinrate = do
     Nothing -> throwError err404
     Just p  -> return p
 
-
 euPlayerHighestMmr :: MonadIO m => AppT m DbPlayer
 euPlayerHighestMmr = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 2
@@ -191,7 +191,6 @@ euPlayerHighestMmr = do
   case player of
     Nothing -> throwError err404
     Just p  -> return p
-
 
 runKrPort :: Port -> IO ()
 runKrPort port = run port krApp
@@ -221,7 +220,7 @@ type KrGmApi
 allKrPlayers :: App [DbPlayer]
 allKrPlayers = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
-  return players
+  liftIO $ return players
 
 krPlayerByName :: Text -> App DbPlayer
 krPlayerByName name = do
