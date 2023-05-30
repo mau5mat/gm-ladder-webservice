@@ -7,12 +7,16 @@ module Domain ( getPlayerByName
 
 import DbEntities (DbPlayer(..))
 
-import Data.Function
-import Data.List
+import Data.List ( find
+                 , maximumBy
+                 )
+
 import Data.Maybe ( mapMaybe
                   , fromMaybe
                   , catMaybes
                   )
+
+import Data.Function (on)
 
 import Data.Text (Text)
 
