@@ -5,7 +5,6 @@ import Domain ( getPlayerWithHighestWinRate
               )
 
 import Api ( runGmPort
-           , runKrPort
            , naPlayerHighestMmr
            , naPlayerHighestWinrate
            )

@@ -10,6 +10,7 @@ import BattleNet (createUrlWithRegion)
 
 import Network.HTTP.Simple
 
+
 getGrandmastersFromRegion :: Text -> IO LadderTeams
 getGrandmastersFromRegion region = do
   response <- httpJSON $ ladderTeamsRequestUrl region

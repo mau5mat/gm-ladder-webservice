@@ -4,7 +4,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Api ( runGmPort
            , runKrPort
@@ -17,12 +17,14 @@ import DbEntities ( DbPlayer(..)
                   , Entity(..)
                   )
 
-import DbQueries (getPlayersByRegion)
-
 import Domain ( getPlayerByName
               , getPlayerHighestMmr
               , getPlayerWithHighestWinRate
               )
+
+import App ( AppT(..)
+           , App
+           )
 
 import Servant.API
 import Servant.Server
@@ -39,9 +41,7 @@ import Control.Monad.IO.Class (liftIO)
 
 import Servant (throwError)
 
-import App ( AppT(..)
-           , App
-           )
+import DbQueries (getPlayersByRegion)
 
 
 appToHandler :: AppT IO a -> Handler a
@@ -149,7 +149,6 @@ euGmRoutes
   :<|> euPlayerHighestMmr
   :<|> euPlayerByName
 
-
 type EuGmApi
   = "gm-ladder" :> "eu" :> "players" :> Get '[JSON] [DbPlayer]
   :<|> "gm-ladder" :> "eu" :> "player" :> "highest-win-rate" :> Get '[JSON] DbPlayer
@@ -191,6 +190,7 @@ euPlayerHighestMmr = do
   case player of
     Nothing -> throwError err404
     Just p  -> return p
+
 
 runKrPort :: Port -> IO ()
 runKrPort port = run port krApp
