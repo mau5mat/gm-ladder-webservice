@@ -199,7 +199,6 @@ runKrPort port = run port krApp
 krApp :: Application
 krApp = serve krGmAPI krServer
 
-
 krGmAPI :: Proxy KrGmApi
 krGmAPI = Proxy
 
@@ -209,17 +208,17 @@ krServer = hoistServer krGmAPI appToHandler krGmRoutes
 krGmRoutes :: ServerT KrGmApi App
 krGmRoutes
   = allKrPlayers
-  :<|> krPlayerByName
   :<|> krPlayerHighestWinrate
   :<|> krPlayerHighestMmr
+  :<|> krPlayerByName
 
 type KrGmApi
   = "gm-ladder" :> "kr" :> "players" :> Get '[JSON] [DbPlayer]
-  :<|> "gm-ladder" :> "kr" :> "player" :> Capture "name" Text :> Get '[JSON] DbPlayer
   :<|> "gm-ladder" :> "kr" :> "player" :> "highest-win-rate" :> Get '[JSON] DbPlayer
   :<|> "gm-ladder" :> "kr" :> "player" :> "highest-mmr" :> Get '[JSON] DbPlayer
+  :<|> "gm-ladder" :> "kr" :> "player" :> QueryParam' '[Required] "name" Text :> Get '[JSON] DbPlayer
 
-allKrPlayers ::App [DbPlayer]
+allKrPlayers :: App [DbPlayer]
 allKrPlayers = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
   return players
@@ -234,7 +233,6 @@ krPlayerByName name = do
     Nothing -> throwError err404
     Just p  -> return p
 
-
 krPlayerHighestWinrate :: App DbPlayer
 krPlayerHighestWinrate = do
   players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
@@ -244,7 +242,6 @@ krPlayerHighestWinrate = do
   case player of
     Nothing -> throwError err404
     Just p  -> return p
-
 
 krPlayerHighestMmr :: App DbPlayer
 krPlayerHighestMmr = do

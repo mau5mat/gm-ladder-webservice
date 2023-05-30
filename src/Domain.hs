@@ -7,6 +7,8 @@ module Domain ( getPlayerByName
 
 import DbEntities (DbPlayer(..))
 
+import Data.Function
+import Data.List
 import Data.Maybe ( mapMaybe
                   , fromMaybe
                   , catMaybes
@@ -17,41 +19,25 @@ import Data.Text (Text)
 
 getPlayerByName :: [DbPlayer] -> Text -> Maybe DbPlayer
 getPlayerByName dbPlayers name
-  = case namedPlayer of
-      [] -> Nothing
-      (x:xs) -> Just x
-  where namedPlayer
-          = filter (\player -> dbPlayerDisplayName player == name) dbPlayers
+  = find (\player -> dbPlayerDisplayName player == name) dbPlayers
 
 getPlayerHighestMmr :: [DbPlayer] -> Maybe DbPlayer
-getPlayerHighestMmr dbPlayers
-  = case highestMMRPlayer of
-      []  -> Nothing
-      (x:xs) -> Just x
-  where highestMMRPlayer
-          = filter (\player -> checkMMR player == maximum allMMRs) dbPlayers
-        allMMRs
-          = mapMaybe dbPlayerMmr dbPlayers
+getPlayerHighestMmr [] = Nothing
+getPlayerHighestMmr xs = Just (maximumBy (compare `on` checkMMR) xs)
+  where
+  checkMMR :: DbPlayer -> Int
+  checkMMR dbPlayer = fromMaybe 0 (dbPlayerMmr dbPlayer)
 
 getPlayerWithHighestWinRate :: [DbPlayer] -> Maybe DbPlayer
-getPlayerWithHighestWinRate dbPlayers
-  = case highestWinPercentagePlayer of
-      []     -> Nothing
-      (x:xs) -> Just x
-  where highestWinPercentagePlayer
-          = filter (\player -> calculateWinPercentage (dbPlayerWins player) (dbPlayerLosses player) == maximum percentageWinRateList) dbPlayers
-        percentageWinRateList
-          = fmap (\player -> calculateWinPercentage (dbPlayerWins player) (dbPlayerLosses player)) dbPlayers
-
-calculateWinPercentage :: Int -> Int -> String
-calculateWinPercentage wins losses = show winPercent
-  where totalPlayed
-          = fromIntegral wins + fromIntegral losses
-        winPercent
-          = fromIntegral wins / totalPlayed * 100
-
-checkMMR :: DbPlayer -> Int
-checkMMR dbPlayer = fromMaybe 0 (dbPlayerMmr dbPlayer)
+getPlayerWithHighestWinRate [] = Nothing
+getPlayerWithHighestWinRate xs = Just (maximumBy (compare `on` playerWinPercentage) xs)
+  where
+  playerWinPercentage p = calculateWinPercentage (dbPlayerWins p) (dbPlayerLosses p)
+  calculateWinPercentage wins losses = show winPercent
+    where totalPlayed
+            = fromIntegral wins + fromIntegral losses
+          winPercent
+            = fromIntegral wins / totalPlayed * 100
 
 countRaceDistribution :: (Text -> Bool) -> [DbPlayer] -> Int
 countRaceDistribution predicate dbPlayers
