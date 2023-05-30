@@ -17,8 +17,9 @@ import Test.Hspec
 spec :: Spec
 spec = do
   describe "getPlayerByName" $ do
-    it "returns a dbPlayer from a list of dbPlayers" $ do
+    it "returns a dbPlayer from a list of dbPlayers by matching a provided name to a name in the list" $ do
       let player = getPlayerByName mockDbPlayers "FlashFan"
+
       let flashFan
             = DbPlayer
             { dbPlayerPreviousRank = 2
@@ -33,6 +34,7 @@ spec = do
             , dbPlayerClanTag = Just "gamers"
             , dbPlayerFavoriteRace = Just "terran"
             }
+
       case player of
         Nothing -> return ()
         Just p  -> p `shouldBe` flashFan
