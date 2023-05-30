@@ -38,7 +38,7 @@ DbPlayer json
     displayName Text
     clanTag Text Maybe
     favoriteRace Text Maybe
-    deriving Show
+    deriving Show Eq
 |]
 
 migrateDbEntity :: Text -> IO ()
