@@ -92,7 +92,7 @@ type NaGmApi
   = "gm-ladder" :> "na" :> "players" :> Get '[JSON] [DbPlayer]
   :<|> "gm-ladder" :> "na" :> "player" :> "highest-win-rate" :> Get '[JSON] DbPlayer
   :<|> "gm-ladder" :> "na" :> "player" :> "highest-mmr" :> Get '[JSON] DbPlayer
-  :<|> "gm-ladder" :> "kr" :> "player" :> QueryParam' '[Required] "name" Text :> Get '[JSON] DbPlayer
+  :<|> "gm-ladder" :> "na" :> "player" :> QueryParam' '[Required] "name" Text :> Get '[JSON] DbPlayer
 
 allNaPlayers :: MonadIO m => AppT m [DbPlayer]
 allNaPlayers = do
@@ -153,7 +153,7 @@ type EuGmApi
   = "gm-ladder" :> "eu" :> "players" :> Get '[JSON] [DbPlayer]
   :<|> "gm-ladder" :> "eu" :> "player" :> "highest-win-rate" :> Get '[JSON] DbPlayer
   :<|> "gm-ladder" :> "eu" :> "player" :> "highest-mmr" :> Get '[JSON] DbPlayer
-  :<|> "gm-ladder" :> "kr" :> "player" :> QueryParam' '[Required] "name" Text :> Get '[JSON] DbPlayer
+  :<|> "gm-ladder" :> "eu" :> "player" :> QueryParam' '[Required] "name" Text :> Get '[JSON] DbPlayer
 
 allEuPlayers :: MonadIO m => AppT m [DbPlayer]
 allEuPlayers = do
