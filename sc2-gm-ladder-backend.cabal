@@ -101,6 +101,7 @@ test-suite spec
     hs-source-dirs: test
 
     other-modules: DomainSpec
+                 , MockData
 
     build-depends: base ^>=4.16.4.0
                  , text
