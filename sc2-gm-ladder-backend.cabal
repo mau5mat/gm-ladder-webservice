@@ -47,6 +47,7 @@ executable sc2-gm-ladder-backend
                  , sc2-gm-ladder-backend
 
     default-language: Haskell2010
+    ghc-options: -Wall -Wno-unused-imports -Wno-unused-top-binds
 
 
 library
@@ -84,3 +85,4 @@ library
                  , conduit
 
     default-language: Haskell2010
+    ghc-options: -Wall -Wno-unused-imports -Wno-unused-top-binds -Wno-missing-exported-signatures
