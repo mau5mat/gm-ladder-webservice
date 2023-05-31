@@ -43,7 +43,7 @@ mockDbPlayers
     , dbPlayerPoints = 467
     , dbPlayerWins = 121
     , dbPlayerLosses = 57
-    , dbPlayerMmr = Just 5899
+    , dbPlayerMmr = Just 7001
     , dbPlayerJoinTimestamp = 12425393
     , dbPlayerRealm = 1
     , dbPlayerRegion = 1

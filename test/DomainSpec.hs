@@ -16,10 +16,13 @@ import Domain ( getPlayerByName
               , isZerg
               )
 
+import Test.Hspec ( shouldBe
+                  , it
+                  , describe
+                  , Spec )
+
+
 import MockData (mockDbPlayers)
-
-import Test.Hspec
-
 
 spec :: Spec
 spec = do
@@ -50,24 +53,24 @@ spec = do
     it "returns a dbPlayer from a list of dbPlayers that has the highest mmr value" $ do
       let player = getPlayerHighestMmr mockDbPlayers
 
-      let flashFan
+      let zergEnthusiast
             = DbPlayer
-            { dbPlayerPreviousRank = 2
-            , dbPlayerPoints = 435
-            , dbPlayerWins = 123
-            , dbPlayerLosses = 12
-            , dbPlayerMmr = Just 7000
-            , dbPlayerJoinTimestamp = 12425391
+            { dbPlayerPreviousRank = 3
+            , dbPlayerPoints = 467
+            , dbPlayerWins = 121
+            , dbPlayerLosses = 57
+            , dbPlayerMmr = Just 7001
+            , dbPlayerJoinTimestamp = 12425393
             , dbPlayerRealm = 1
             , dbPlayerRegion = 1
-            , dbPlayerDisplayName = "FlashFan"
+            , dbPlayerDisplayName = "stargamer451"
             , dbPlayerClanTag = Just "gamers"
-            , dbPlayerFavoriteRace = Just "terran"
+            , dbPlayerFavoriteRace = Just "zerg"
             }
 
       case player of
         Nothing -> return ()
-        Just p  -> p `shouldBe` flashFan
+        Just p  -> p `shouldBe` zergEnthusiast
 
   describe "getPlayerWithHighestWinRate" $ do
     it "returns a dbPlayer from a list of dbPlayers that has the highest calculated win rate from their wins and losses" $ do
