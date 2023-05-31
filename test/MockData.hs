@@ -29,7 +29,7 @@ mockDbPlayers
     { dbPlayerPreviousRank = 1
     , dbPlayerPoints = 465
     , dbPlayerWins = 120
-    , dbPlayerLosses = 63
+    , dbPlayerLosses = 1
     , dbPlayerMmr = Just 6192
     , dbPlayerJoinTimestamp = 12425392
     , dbPlayerRealm = 1

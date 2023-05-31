@@ -1,8 +1,12 @@
-{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Domain ( getPlayerByName
               , getPlayerWithHighestWinRate
               , getPlayerHighestMmr
+              , countRaceDistribution
+              , isTerran
+              , isProtoss
+              , isZerg
               ) where
 
 import DbEntities (DbPlayer(..))
@@ -36,18 +40,22 @@ getPlayerWithHighestWinRate :: [DbPlayer] -> Maybe DbPlayer
 getPlayerWithHighestWinRate [] = Nothing
 getPlayerWithHighestWinRate xs = Just (maximumBy (compare `on` playerWinPercentage) xs)
   where
-  playerWinPercentage p = calculateWinPercentage (dbPlayerWins p) (dbPlayerLosses p)
-  calculateWinPercentage wins losses = show winPercent
-    where totalPlayed
-            = fromIntegral wins + fromIntegral losses :: Double
-          winPercent
-            = fromIntegral wins / totalPlayed * 100
+  playerWinPercentage p
+    = calculateWinPercentage (dbPlayerWins p) (dbPlayerLosses p)
+  calculateWinPercentage wins losses
+    = show (winPercent :: Double)
+    where
+      totalPlayed
+        = fromIntegral wins + fromIntegral losses
+      winPercent
+        = fromIntegral wins / totalPlayed * 100
 
 countRaceDistribution :: (Text -> Bool) -> [DbPlayer] -> Int
 countRaceDistribution predicate dbPlayers
   = length . filter predicate $ catMaybes races
-  where races
-          = fmap dbPlayerFavoriteRace dbPlayers
+  where
+    races
+      = fmap dbPlayerFavoriteRace dbPlayers
 
 numberOfTerrans :: [DbPlayer] -> Int
 numberOfTerrans = countRaceDistribution isTerran

@@ -1,6 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-
 module Entities ( LadderTeams(..)
                 , Player(..)
                 , PlayerInfo(..)
