@@ -94,6 +94,10 @@ spec = do
 
   describe "countRaceDistribution" $ do
     it "returns the total amount players favour a certain race using a predicade" $ do
-      let count = countRaceDistribution isTerran mockDbPlayers
+      let terranCount = countRaceDistribution isTerran mockDbPlayers
+      let protossCount = countRaceDistribution isProtoss mockDbPlayers
+      let zergCount = countRaceDistribution isZerg mockDbPlayers
 
-      count `shouldBe` 1
+      terranCount `shouldBe` 1
+      protossCount `shouldBe` 1
+      zergCount `shouldBe` 1
