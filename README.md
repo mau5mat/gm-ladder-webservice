@@ -1,6 +1,10 @@
 # gm-ladder-webservice
 Backend webservice using Persistent, Servant, HSpec and more.
 
+## TODO
+
+- Refactor code repetition in Api.hs and DbQueries.hs 
+
 ## Description
 
 First and foremost, if anybody has any feedback or pointers into how to improve this project I would love to hear it.  Please leave a PR or Email me on mau5mat@gmail.com!
