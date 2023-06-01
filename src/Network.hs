@@ -4,11 +4,16 @@ import Data.Text ( Text
                  , unpack
                  )
 
-import Entities (LadderTeams)
+import Network.HTTP.Simple( parseRequest_
+                          , Request
+                          , Response
+                          , getResponseBody
+                          , httpJSON
+                          )
 
 import BattleNet (createUrlWithRegion)
 
-import Network.HTTP.Simple
+import Entities (LadderTeams)
 
 
 getGrandmastersFromRegion :: Text -> IO LadderTeams

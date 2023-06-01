@@ -2,6 +2,7 @@
 
 module DbQueries ( insertDbPlayers
                  , getPlayersByRegion
+                 , deleteAllPlayers
                  ) where
 
 import ConvertEntities ( toPlayers
@@ -47,6 +48,13 @@ insertDbPlayers db entities
     players <- mapM insert entities
 
     liftIO $ print players
+
+deleteAllPlayers :: Text -> IO ()
+deleteAllPlayers db
+  = runSqlite db $ do
+    deleteWhere ([] :: [Filter DbPlayer])
+
+    liftIO $ print "deleted db players"
 
 addNaData :: IO ()
 addNaData = do

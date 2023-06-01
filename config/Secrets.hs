@@ -1,8 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Secrets ( starcraftClientToken
-               , dbName
-               ) where
+module Secrets (starcraftClientToken) where
 
 import Data.Text (Text)
 
@@ -12,6 +10,3 @@ import Data.Text (Text)
 
 starcraftClientToken :: Text
 starcraftClientToken = "EUCx7y8Yss2qLvL4Wad33a5PmAADpVdCx3"
-
-dbName :: Text
-dbName = "players.sqlite3"

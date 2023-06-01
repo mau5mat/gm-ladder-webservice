@@ -5,10 +5,12 @@ module DbQueriesSpec (spec) where
 import DbEntities ( DbPlayer(..)
                   , Entity(..)
                   , EntityField(..)
+                  , migrateDbEntity
                   )
 
 import DbQueries ( insertDbPlayers
                  , getPlayersByRegion
+                 , deleteAllPlayers
                  )
 
 import Test.Hspec ( shouldBe
@@ -27,16 +29,21 @@ import Database.Persist.Sqlite (runSqlite)
 import ConvertEntities (fromEntityToDbPlayer)
 
 import MockData (mockDbPlayers)
-import Control.Monad (liftM)
 
+import Control.Monad (join)
 
 spec :: Spec
 spec = do
   describe "insertDbPlayers" $ do
     it "inserts a list of entities into a sqlite database" $ do
-      liftIO $ insertDbPlayers ":memory:" mockDbPlayers
 
-      let players = liftM getPlayersByRegion ":memory:" 1
+      migrateDbEntity "test_db.sqlite3"
+
+      liftIO $ insertDbPlayers "test_db.sqlite3" mockDbPlayers
+
+  describe "getPlayersByRegion" $ do
+    it "returns a list of dbPlayers from a provided region" $ do
+      players <- getPlayersByRegion "test_db.sqlite3" 1
 
       let player = getPlayerByName players "FlashFan"
 
@@ -58,3 +65,6 @@ spec = do
       case player of
         Nothing -> return ()
         Just p  -> p `shouldBe` flashFan
+
+    it "removes all players from a database" $ do
+      deleteAllPlayers "test_db.sqlite3"
