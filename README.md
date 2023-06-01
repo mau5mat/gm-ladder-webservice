@@ -22,13 +22,10 @@ For the future I plan to use this as a backend for Elm, and SwiftUI apps.
 
 ## Authors
 
-Author:
-
 Matt Roberts
 
-Contributor:
+## Contributors
 
-Edmund Noble
 [@EdmundNoble](https://github.com/edmundnoble])
 
 ## Version History
