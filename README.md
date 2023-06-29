@@ -3,7 +3,8 @@ Backend webservice using Persistent, Servant, HSpec and more.
 
 ## TODO
 
-- Refactor code repetition in Api.hs and DbQueries.hs 
+- Refactor code repetition in Api.hs and DbQueries.hs
+- Find out a way to construct my db queries without opening and closing a connection each time
 
 ## Description
 
