@@ -5,6 +5,9 @@ Backend webservice using Persistent, Servant, HSpec and more.
 
 - Refactor code repetition in Api.hs and DbQueries.hs
 - Find out a way to construct my db queries without opening and closing a connection each time
+- Read code from Servant/Yesod projects and compare and contrast
+- Add more features
+- Write documentation
 
 ## Description
 
