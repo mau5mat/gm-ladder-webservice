@@ -24,7 +24,7 @@ import Domain ( getPlayerByName
               , getPlayerHighestMmr
               , getPlayerWithHighestWinRate)
 
-import Network (getGrandmastersFromRegion)
+import Network (getDataFromRegion)
 
 import Database.Persist
 import Database.Persist.TH
@@ -56,44 +56,21 @@ deleteAllPlayers db
 
     liftIO $ print "deleted db players"
 
-addNaData :: IO ()
-addNaData = do
-  na <- getGrandmastersFromRegion "NA"
-
-  let naPlayers = toPlayers na
-  let naPlayerInfos = concatMap toPlayerInfo naPlayers
-  let combinedPlayerData = zip naPlayers naPlayerInfos
-  let dbPlayers = fmap toDbPlayerFromTuple combinedPlayerData
-
+migrateAndInsertDbPlayers :: [DbPlayer] -> IO ()
+migrateAndInsertDbPlayers dbPlayers = do
   migrateDbEntity "players.sqlite3"
   insertDbPlayers "players.sqlite3" dbPlayers
 
   return ()
 
-addEuData :: IO ()
-addEuData = do
-  eu <- getGrandmastersFromRegion "EU"
+runRequest :: IO ()
+runRequest = do
+  krPlayers <- getDataFromRegion "KR"
+  naPlayers <- getDataFromRegion "NA"
+  euPlayers <- getDataFromRegion "EU"
 
-  let euPlayers = toPlayers eu
-  let euPlayerInfos = concatMap toPlayerInfo euPlayers
-  let combinedPlayerData = zip euPlayers euPlayerInfos
-  let dbPlayers = fmap toDbPlayerFromTuple combinedPlayerData
+  let allPlayers = krPlayers <> naPlayers <> euPlayers
 
-  migrateDbEntity "players.sqlite3"
-  insertDbPlayers "players.sqlite3" dbPlayers
-
-  return ()
-
-addKrData :: IO ()
-addKrData = do
-  kr <- getGrandmastersFromRegion "KR"
-
-  let krPlayers = toPlayers kr
-  let krPlayerInfos = concatMap toPlayerInfo krPlayers
-  let combinedPlayerData = zip krPlayers krPlayerInfos
-  let dbPlayers = fmap toDbPlayerFromTuple combinedPlayerData
-
-  migrateDbEntity "players.sqlite3"
-  insertDbPlayers "players.sqlite3" dbPlayers
+  migrateAndInsertDbPlayers allPlayers
 
   return ()
