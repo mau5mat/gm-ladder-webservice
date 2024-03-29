@@ -26,7 +26,7 @@ executable sc2-gm-ladder-backend
 
     hs-source-dirs: app
 
-    build-depends: base ^>=4.16.4.0
+    build-depends: base ^>=4.17.2.0
                  , text
                  , aeson
                  , unliftio
@@ -68,7 +68,7 @@ library
                    , Api
                    , Secrets
 
-    build-depends: base ^>=4.16.4.0
+    build-depends: base ^>=4.17.2.0
                  , text
                  , aeson
                  , unliftio
@@ -104,7 +104,7 @@ test-suite spec
                  , DbQueriesSpec
                  , MockData
 
-    build-depends: base ^>=4.16.4.0
+    build-depends: base ^>=4.17.2.0
                  , text
                  , aeson
                  , unliftio

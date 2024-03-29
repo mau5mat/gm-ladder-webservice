@@ -1,60 +1,65 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module DbQueries ( insertDbPlayers
-                 , getPlayersByRegion
-                 , deleteAllPlayers
-                 ) where
+module DbQueries (
+  insertDbPlayers,
+  getPlayersByRegion,
+  deleteAllPlayers,
+) where
 
-import ConvertEntities ( toPlayers
-                       , toPlayerInfo
-                       , toDbPlayerFromTuple
-                       , fromEntityToDbPlayer
-                       )
+import ConvertEntities (
+  fromEntityToDbPlayer,
+  toDbPlayerFromTuple,
+  toPlayerInfo,
+  toPlayers,
+ )
 
-import Entities ( Player
-                , PlayerInfo
-                )
+import Entities (
+  Player,
+  PlayerInfo,
+ )
 
-import DbEntities ( DbPlayer(..)
-                  , EntityField(..)
-                  , migrateDbEntity
-                  )
+import DbEntities (
+  DbPlayer (..),
+  EntityField (..),
+  migrateDbEntity,
+ )
 
-import Domain ( getPlayerByName
-              , getPlayerHighestMmr
-              , getPlayerWithHighestWinRate)
+import Domain (
+  getPlayerByName,
+  getPlayerHighestMmr,
+  getPlayerWithHighestWinRate,
+ )
 
 import Network (getDataFromRegion)
 
 import Database.Persist
-import Database.Persist.TH
 import Database.Persist.Sqlite
+import Database.Persist.TH
 
 import Control.Monad.IO.Class (liftIO)
 
 import Data.Text (Text)
 
-
 getPlayersByRegion :: Text -> Int -> IO [DbPlayer]
-getPlayersByRegion db region
-  = runSqlite db $ do
-  players <- selectList [DbPlayerRegion ==. region] []
+getPlayersByRegion db region =
+  runSqlite db $ do
+    players <- selectList [DbPlayerRegion ==. region] []
 
-  liftIO $ return $ fmap fromEntityToDbPlayer players
+    liftIO $ return $ fmap fromEntityToDbPlayer players
 
 insertDbPlayers :: Text -> [DbPlayer] -> IO ()
-insertDbPlayers db entities
-  = runSqlite db $ do
+insertDbPlayers db entities =
+  runSqlite db $ do
     players <- mapM insert entities
 
     liftIO $ print players
 
 deleteAllPlayers :: Text -> IO ()
-deleteAllPlayers db
-  = runSqlite db $ do
+deleteAllPlayers db =
+  runSqlite db $ do
     deleteWhere ([] :: [Filter DbPlayer])
 
-    liftIO $ print "deleted db players"
+    liftIO $ putStr "deleted db players"
 
 migrateAndInsertDbPlayers :: [DbPlayer] -> IO ()
 migrateAndInsertDbPlayers dbPlayers = do
