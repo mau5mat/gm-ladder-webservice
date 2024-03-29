@@ -1,28 +1,25 @@
-module Network (getDataFromRegion) where
-
-import Data.Text ( Text
-                 , unpack
-                 )
-
-import Network.HTTP.Simple( parseRequest_
-                          , Request
-                          , Response
-                          , getResponseBody
-                          , httpJSON
-                          )
-
-import ConvertEntities ( toPlayers
-                       , toPlayerInfo
-                       , toDbPlayerFromTuple
-                       , fromEntityToDbPlayer
-                       )
+module Network.Service (getPlayersFromRegion) where
 
 import BattleNet (createUrlWithRegion)
-
-import Entities (LadderTeams)
-
-import DbEntities (DbPlayer(..))
-
+import Data.Text (
+  Text,
+  unpack,
+ )
+import Model.LadderTeams.Types (LadderTeams)
+import Model.Player.Adaptor (
+  toDbPlayer,
+  toDbPlayerFromTuple,
+  toPlayerInfo,
+  toPlayers,
+ )
+import Model.Player.Types (DbPlayer)
+import Network.HTTP.Simple (
+  Request,
+  Response,
+  getResponseBody,
+  httpJSON,
+  parseRequest_,
+ )
 
 getGrandmastersFromRegion :: Text -> IO LadderTeams
 getGrandmastersFromRegion region = do
@@ -36,8 +33,8 @@ ladderTeamsRequestUrl regionId = parseRequest_ . unpack $ createUrlWithRegion re
 decodeLadderTeams :: Response LadderTeams -> LadderTeams
 decodeLadderTeams = getResponseBody
 
-getDataFromRegion :: Text -> IO [DbPlayer]
-getDataFromRegion region = do
+getPlayersFromRegion :: Text -> IO [DbPlayer]
+getPlayersFromRegion region = do
   regionData <- getGrandmastersFromRegion region
 
   let players = toPlayers regionData

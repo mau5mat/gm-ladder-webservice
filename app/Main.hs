@@ -1,17 +1,7 @@
 module Main where
 
-import Domain ( getPlayerWithHighestWinRate
-              , getPlayerHighestMmr
-              )
-
-import Api ( runGmPort
-           , naPlayerHighestMmr
-           , naPlayerHighestWinrate
-           )
-
-import DbQueries (getPlayersByRegion)
-
 import Data.Text (Text)
+import Network.API.Routes.All (runGmPort)
 
 main :: IO ()
 main = do

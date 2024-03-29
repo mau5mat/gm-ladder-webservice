@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE EmptyDataDecls #-}
 {-# LANGUAGE FlexibleContexts #-}
@@ -14,17 +15,30 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module DbEntities (
-  DbPlayer (..),
-  Entity (..),
-  EntityField (..),
-  migrateDbEntity,
-) where
+module Model.Player.Types where
 
+import Data.Aeson (
+  FromJSON,
+  ToJSON,
+ )
+import Data.Text (Text)
 import Database.Persist.Sqlite
 import Database.Persist.TH
+import GHC.Generics (Generic)
+import Model.PlayerInfo.Types (PlayerInfo)
 
-import Data.Text (Text)
+data Player = Player
+  { teamMembers :: [PlayerInfo]
+  , previousRank :: Int
+  , points :: Int
+  , wins :: Int
+  , losses :: Int
+  , mmr :: Maybe Int
+  , joinTimestamp :: Int
+  }
+  deriving (Generic, Show)
+instance ToJSON Player
+instance FromJSON Player
 
 share
   [mkPersist sqlSettings, mkMigrate "migrateAll"]
