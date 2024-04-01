@@ -7,7 +7,7 @@ import Data.Text (Text)
 import Database.Persist (Filter, deleteWhere, insert)
 import Database.Persist.Sqlite (runSqlite)
 import Database.Persist.TH ()
-import Model.Player.Types (DbPlayer, migrateDbEntity)
+import Model.DbPlayer.Types (DbPlayer, migrateDbEntity)
 import Network.Service (getPlayersFromRegion)
 
 runRequest :: IO ()

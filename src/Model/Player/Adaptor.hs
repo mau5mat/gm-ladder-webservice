@@ -1,8 +1,9 @@
 module Model.Player.Adaptor where
 
 import Database.Persist.Sqlite (Entity, entityVal, entityValues)
+import Model.DbPlayer.Types (DbPlayer (..))
 import Model.LadderTeams.Types (LadderTeams (ladderTeams))
-import Model.Player.Types (DbPlayer (..), Player (..))
+import Model.Player.Types (Player (..))
 import Model.PlayerInfo.Types (PlayerInfo (..))
 
 toPlayers :: LadderTeams -> [Player]

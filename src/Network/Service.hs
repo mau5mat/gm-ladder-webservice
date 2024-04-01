@@ -5,6 +5,7 @@ import Data.Text (
   Text,
   unpack,
  )
+import Model.DbPlayer.Types (DbPlayer)
 import Model.LadderTeams.Types (LadderTeams)
 import Model.Player.Adaptor (
   toDbPlayer,
@@ -12,7 +13,6 @@ import Model.Player.Adaptor (
   toPlayerInfo,
   toPlayers,
  )
-import Model.Player.Types (DbPlayer)
 import Network.HTTP.Simple (
   Request,
   Response,

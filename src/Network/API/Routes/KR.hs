@@ -16,13 +16,13 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Reader (MonadIO)
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
-import Model.Player.Query (
+import Model.DbPlayer.Domain (
   getPlayerByName,
   getPlayerHighestMmr,
   getPlayerWithHighestWinRate,
-  getPlayersByRegion,
  )
-import Model.Player.Types (DbPlayer)
+import Model.DbPlayer.Query (getPlayersByRegion)
+import Model.DbPlayer.Types (DbPlayer)
 import Network.API.Config (appToHandler)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (

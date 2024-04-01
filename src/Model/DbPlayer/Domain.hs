@@ -1,8 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Model.Player.Query where
+module Model.DbPlayer.Domain where
 
-import Control.Monad.IO.Class (liftIO)
 import Data.Function (on)
 import Data.List (
   find,
@@ -14,19 +13,7 @@ import Data.Maybe (
   mapMaybe,
  )
 import Data.Text (Text)
-import Database.Persist
-import Database.Persist.Sqlite
-import Database.Persist.TH
-import Model.Player.Adaptor
-import Model.Player.Types
-import Network.Service (getPlayersFromRegion)
-
-getPlayersByRegion :: Text -> Int -> IO [DbPlayer]
-getPlayersByRegion db region =
-  runSqlite db $ do
-    players <- selectList [DbPlayerRegion ==. region] []
-
-    liftIO $ return $ fmap fromEntityToDbPlayer players
+import Model.DbPlayer.Types (DbPlayer (..))
 
 getPlayerByName :: [DbPlayer] -> Text -> Maybe DbPlayer
 getPlayerByName dbPlayers name =

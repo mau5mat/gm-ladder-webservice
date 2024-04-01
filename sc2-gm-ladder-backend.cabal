@@ -55,9 +55,11 @@ library
     App
     BattleNet
     Environment.Config
+    Model.DbPlayer.Domain
+    Model.DbPlayer.Query
+    Model.DbPlayer.Types
     Model.LadderTeams.Types
     Model.Player.Adaptor
-    Model.Player.Query
     Model.Player.Types
     Model.Player.Update
     Model.PlayerInfo.Types
