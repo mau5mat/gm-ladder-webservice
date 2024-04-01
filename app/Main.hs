@@ -1,8 +1,8 @@
 module Main where
 
 import Data.Text (Text)
-import Network.API.Routes.All (runGmPort)
+import Network.API.Routes.All (runPort)
 
 main :: IO ()
 main = do
-  runGmPort 8081
+  runPort 8081
