@@ -7,7 +7,6 @@ import Data.Aeson (
   ToJSON,
  )
 import Data.Text (Text)
-import Database.Persist.TH ()
 import GHC.Generics (Generic)
 
 data PlayerInfo = PlayerInfo

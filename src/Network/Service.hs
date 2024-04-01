@@ -1,18 +1,18 @@
 module Network.Service (getPlayersFromRegion) where
 
+import qualified Model.Player.Adaptor as Adaptor
+
 import BattleNet (createUrlWithRegion)
+
 import Data.Text (
   Text,
   unpack,
  )
+
+import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer)
 import Model.LadderTeams.Types (LadderTeams)
-import Model.Player.Adaptor (
-  toDbPlayer,
-  toDbPlayerFromTuple,
-  toPlayerInfo,
-  toPlayers,
- )
+
 import Network.HTTP.Simple (
   Request,
   Response,
@@ -21,25 +21,25 @@ import Network.HTTP.Simple (
   parseRequest_,
  )
 
-getGrandmastersFromRegion :: Text -> IO LadderTeams
+getPlayersFromRegion :: Region -> IO [DbPlayer]
+getPlayersFromRegion region = do
+  regionData <- getGrandmastersFromRegion region
+
+  let players = Adaptor.toPlayers regionData
+  let playerInfos = concatMap Adaptor.toPlayerInfo players
+  let combinedPlayerData = zip players playerInfos
+  let dbPlayers = fmap Adaptor.toDbPlayerFromTuple combinedPlayerData
+
+  return dbPlayers
+
+getGrandmastersFromRegion :: Region -> IO LadderTeams
 getGrandmastersFromRegion region = do
   response <- httpJSON $ ladderTeamsRequestUrl region
 
   pure $ decodeLadderTeams response
 
-ladderTeamsRequestUrl :: Text -> Request
-ladderTeamsRequestUrl regionId = parseRequest_ . unpack $ createUrlWithRegion regionId
+ladderTeamsRequestUrl :: Region -> Request
+ladderTeamsRequestUrl region = parseRequest_ . unpack $ createUrlWithRegion region
 
 decodeLadderTeams :: Response LadderTeams -> LadderTeams
 decodeLadderTeams = getResponseBody
-
-getPlayersFromRegion :: Text -> IO [DbPlayer]
-getPlayersFromRegion region = do
-  regionData <- getGrandmastersFromRegion region
-
-  let players = toPlayers regionData
-  let playerInfos = concatMap toPlayerInfo players
-  let combinedPlayerData = zip players playerInfos
-  let dbPlayers = fmap toDbPlayerFromTuple combinedPlayerData
-
-  return dbPlayers

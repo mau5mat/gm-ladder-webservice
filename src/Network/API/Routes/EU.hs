@@ -10,37 +10,38 @@ module Network.API.Routes.EU where
 import qualified Model.DbPlayer.Domain as Domain
 import qualified Model.DbPlayer.Query as Query
 
-import App (
-  App,
-  AppT (..),
- )
+import App (App)
+
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Reader (MonadIO)
+
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
+
 import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer)
+
 import Network.API.Config (appToHandler)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (
   Port,
   run,
  )
+
 import Servant (throwError)
 import Servant.API
 import Servant.Server (Server, ServerT, err404, hoistServer, serve)
 
-runEuPort :: Port -> IO ()
-runEuPort port = run port euApp
+runPort :: Port -> IO ()
+runPort port = run port app
 
-euApp :: Application
-euApp = serve euGmAPI euServer
+app :: Application
+app = serve proxy server
 
-euGmAPI :: Proxy API
-euGmAPI = Proxy
+proxy :: Proxy API
+proxy = Proxy
 
-euServer :: Server API
-euServer = hoistServer euGmAPI appToHandler routes
+server :: Server API
+server = hoistServer proxy appToHandler routes
 
 routes :: ServerT API App
 routes =

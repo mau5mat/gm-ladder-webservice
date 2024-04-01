@@ -10,37 +10,38 @@ module Network.API.Routes.NA where
 import qualified Model.DbPlayer.Domain as Domain
 import qualified Model.DbPlayer.Query as Query
 
-import App (
-  App,
-  AppT (..),
- )
+import App (App)
+
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Reader (MonadIO)
+
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
+
 import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer)
+
 import Network.API.Config (appToHandler)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (
   Port,
   run,
  )
+
 import Servant (throwError)
 import Servant.API
 import Servant.Server (Server, ServerT, err404, hoistServer, serve)
 
-runNaPort :: Port -> IO ()
-runNaPort port = run port naApp
+runPort :: Port -> IO ()
+runPort port = run port app
 
-naApp :: Application
-naApp = serve naGmAPI naServer
+app :: Application
+app = serve proxy server
 
-naGmAPI :: Proxy API
-naGmAPI = Proxy
+proxy :: Proxy API
+proxy = Proxy
 
-naServer :: Server API
-naServer = hoistServer naGmAPI appToHandler routes
+server :: Server API
+server = hoistServer proxy appToHandler routes
 
 routes :: ServerT API App
 routes =

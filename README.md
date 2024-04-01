@@ -2,13 +2,13 @@
 Backend webservice using Persistent, Servant, HSpec and more.
 
 ## TODO
-
-- Refactor code repetition in Api.hs and DbQueries.hs
-- Find out a way to construct my db queries without opening and closing a connection each time
-- Read code from Servant/Yesod projects and compare and contrast
-- Add more features
-- Write documentation
-
+ 
+- Refactoring work:
+  - SQLite -> Postgres
+  - Basic GitHub Actions CI Pipeline
+  - General re-architecture of app
+  - Refactoring repetitive code
+  
 ## Description
 
 First and foremost, if anybody has any feedback or pointers into how to improve this project I would love to hear it.  Please leave a PR or Email me on mau5mat@gmail.com!

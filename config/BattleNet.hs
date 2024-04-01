@@ -3,23 +3,16 @@
 module BattleNet (createUrlWithRegion) where
 
 import Data.Text (Text)
+import Model.DbPlayer.Query (Region (..), regionToText)
 import Secrets (starcraftClientToken)
 
-createUrlWithRegion :: Text -> Text
+createUrlWithRegion :: Region -> Text
 createUrlWithRegion region =
   baseUrl
     <> grandmasterPath
-    <> regionIdToString region
+    <> regionToText region
     <> accessTokenParam
     <> starcraftClientToken
-
-regionIdToString :: Text -> Text
-regionIdToString regionId =
-  case regionId of
-    "NA" -> "1"
-    "EU" -> "2"
-    "KR" -> "3"
-    _ -> ""
 
 baseUrl :: Text
 baseUrl = "https://us.api.blizzard.com"

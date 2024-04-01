@@ -8,7 +8,8 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-} {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
@@ -19,6 +20,7 @@ module Model.DbPlayer.Types where
 import Data.Text (Text)
 import Database.Persist.Sqlite
 import Database.Persist.TH
+import qualified Environment.Config as Config
 
 share
   [mkPersist sqlSettings, mkMigrate "migrateAll"]
@@ -38,7 +40,8 @@ DbPlayer json
     deriving Show Eq
 |]
 
-migrateDbEntity :: Text -> IO ()
-migrateDbEntity db = runSqlite db $ do
-  runMigration migrateAll
-  return ()
+migrateDbEntity :: IO ()
+migrateDbEntity =
+  runSqlite Config.databaseName $ do
+    runMigration migrateAll
+    return ()

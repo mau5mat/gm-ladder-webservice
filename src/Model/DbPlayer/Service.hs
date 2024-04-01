@@ -6,6 +6,8 @@ module Model.DbPlayer.Service (
 ) where
 
 import qualified Environment.Config as Config
+import qualified Model.DbPlayer.Domain as Domain
+import qualified Model.DbPlayer.Query as Query
 
 import App (
   App,
@@ -15,12 +17,7 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Reader (MonadIO)
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
-import Model.DbPlayer.Domain (
-  getPlayerByName,
-  getPlayerHighestMmr,
-  getPlayerWithHighestWinRate,
- )
-import Model.DbPlayer.Query (Region, getPlayersByRegion)
+import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer (..))
 import Network.API.Config (appToHandler)
 import Network.Wai (Application)
@@ -34,15 +31,15 @@ import Servant.Server (Server, ServerT, err404, hoistServer, serve)
 
 allPlayers :: Region -> App [DbPlayer]
 allPlayers region = do
-  players <- liftIO $ getPlayersByRegion region
+  players <- liftIO $ Query.getPlayersByRegion region
 
   liftIO $ return players
 
 playerByName :: Region -> Text -> App DbPlayer
 playerByName region name = do
-  players <- liftIO $ getPlayersByRegion region
+  players <- liftIO $ Query.getPlayersByRegion region
 
-  let player = getPlayerByName players name
+  let player = Domain.getPlayerByName players name
 
   case player of
     Nothing -> throwError err404
@@ -50,9 +47,9 @@ playerByName region name = do
 
 playerHighestWinrate :: Region -> App DbPlayer
 playerHighestWinrate region = do
-  players <- liftIO $ getPlayersByRegion region
+  players <- liftIO $ Query.getPlayersByRegion region
 
-  let player = getPlayerWithHighestWinRate players
+  let player = Domain.getPlayerWithHighestWinRate players
 
   case player of
     Nothing -> throwError err404
@@ -60,9 +57,9 @@ playerHighestWinrate region = do
 
 playerHighestMmr :: Region -> App DbPlayer
 playerHighestMmr region = do
-  players <- liftIO $ getPlayersByRegion region
+  players <- liftIO $ Query.getPlayersByRegion region
 
-  let player = getPlayerHighestMmr players
+  let player = Domain.getPlayerHighestMmr players
 
   case player of
     Nothing -> throwError err404

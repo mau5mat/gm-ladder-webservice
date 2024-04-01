@@ -7,43 +7,41 @@
 
 module Network.API.Routes.All where
 
-import App (
-  App,
-  AppT (..),
- )
+import qualified Network.API.Routes.EU as EU
+import qualified Network.API.Routes.KR as KR
+import qualified Network.API.Routes.NA as NA
+
+import App (App)
+
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Reader (MonadIO)
+
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
+
 import Network.API.Config (appToHandler)
-import qualified Network.API.Routes.EU as EU (API, routes)
-import qualified Network.API.Routes.KR as KR (API, routes)
-import qualified Network.API.Routes.NA as NA (API, routes)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (
   Port,
   run,
  )
+
 import Servant (throwError)
 import Servant.API
 import Servant.Server (Server, ServerT, hoistServer, serve)
 
-runGmPort :: Port -> IO ()
-runGmPort port = run port gmApp
+runPort :: Port -> IO ()
+runPort port = run port app
 
-gmApp :: Application
-gmApp = serve gmAPI gmServer
+app :: Application
+app = serve proxy server
 
-gmAPI :: Proxy API
-gmAPI = Proxy
+proxy :: Proxy API
+proxy = Proxy
 
-gmServer :: Server API
-gmServer = hoistServer gmAPI appToHandler routes
+server :: Server API
+server = hoistServer proxy appToHandler routes
 
 routes :: ServerT API App
-routes =
-  NA.routes
-    :<|> EU.routes
-    :<|> KR.routes
+routes = NA.routes :<|> EU.routes :<|> KR.routes
 
 type API = NA.API :<|> EU.API :<|> KR.API
