@@ -16,9 +16,9 @@ import Control.Monad.Reader (MonadIO)
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
 import Network.API.Config (appToHandler)
-import Network.API.Routes.EU (EuGmApi, euGmRoutes)
-import Network.API.Routes.KR (KrGmApi, krGmRoutes)
-import Network.API.Routes.NA (NaGmApi, naGmRoutes)
+import qualified Network.API.Routes.EU as EU (API, routes)
+import qualified Network.API.Routes.KR as KR (API, routes)
+import qualified Network.API.Routes.NA as NA (API, routes)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (
   Port,
@@ -34,16 +34,16 @@ runGmPort port = run port gmApp
 gmApp :: Application
 gmApp = serve gmAPI gmServer
 
-gmAPI :: Proxy GmApi
+gmAPI :: Proxy API
 gmAPI = Proxy
 
-gmServer :: Server GmApi
-gmServer = hoistServer gmAPI appToHandler allGmRoutes
+gmServer :: Server API
+gmServer = hoistServer gmAPI appToHandler routes
 
-allGmRoutes :: ServerT GmApi App
-allGmRoutes =
-  naGmRoutes
-    :<|> euGmRoutes
-    :<|> krGmRoutes
+routes :: ServerT API App
+routes =
+  NA.routes
+    :<|> EU.routes
+    :<|> KR.routes
 
-type GmApi = NaGmApi :<|> EuGmApi :<|> KrGmApi
+type API = NA.API :<|> EU.API :<|> KR.API

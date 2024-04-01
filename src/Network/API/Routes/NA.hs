@@ -39,39 +39,51 @@ runNaPort port = run port naApp
 naApp :: Application
 naApp = serve naGmAPI naServer
 
-naGmAPI :: Proxy NaGmApi
+naGmAPI :: Proxy API
 naGmAPI = Proxy
 
-naServer :: Server NaGmApi
-naServer = hoistServer naGmAPI appToHandler naGmRoutes
+naServer :: Server API
+naServer = hoistServer naGmAPI appToHandler routes
 
-naGmRoutes :: ServerT NaGmApi App
-naGmRoutes =
+routes :: ServerT API App
+routes =
   allNaPlayers
     :<|> naPlayerHighestWinrate
     :<|> naPlayerHighestMmr
     :<|> naPlayerByName
 
-type NaGmApi =
+type API =
+  Players
+    :<|> HighestWinRate
+    :<|> HighestMmr
+    :<|> NamedPlayer
+
+type Players =
   "gm-ladder"
     :> "na"
     :> "players"
     :> Get '[JSON] [DbPlayer]
-    :<|> "gm-ladder"
-      :> "na"
-      :> "player"
-      :> "highest-win-rate"
-      :> Get '[JSON] DbPlayer
-    :<|> "gm-ladder"
-      :> "na"
-      :> "player"
-      :> "highest-mmr"
-      :> Get '[JSON] DbPlayer
-    :<|> "gm-ladder"
-      :> "na"
-      :> "player"
-      :> QueryParam' '[Required] "name" Text
-      :> Get '[JSON] DbPlayer
+
+type HighestWinRate =
+  "gm-ladder"
+    :> "na"
+    :> "player"
+    :> "highest-win-rate"
+    :> Get '[JSON] DbPlayer
+
+type HighestMmr =
+  "gm-ladder"
+    :> "na"
+    :> "player"
+    :> "highest-mmr"
+    :> Get '[JSON] DbPlayer
+
+type NamedPlayer =
+  "gm-ladder"
+    :> "na"
+    :> "player"
+    :> QueryParam' '[Required] "name" Text
+    :> Get '[JSON] DbPlayer
 
 allNaPlayers :: (MonadIO m) => AppT m [DbPlayer]
 allNaPlayers = do

@@ -39,39 +39,51 @@ runKrPort port = run port krApp
 krApp :: Application
 krApp = serve krGmAPI krServer
 
-krGmAPI :: Proxy KrGmApi
+krGmAPI :: Proxy API
 krGmAPI = Proxy
 
-krServer :: Server KrGmApi
-krServer = hoistServer krGmAPI appToHandler krGmRoutes
+krServer :: Server API
+krServer = hoistServer krGmAPI appToHandler routes
 
-krGmRoutes :: ServerT KrGmApi App
-krGmRoutes =
+routes :: ServerT API App
+routes =
   allKrPlayers
     :<|> krPlayerHighestWinrate
     :<|> krPlayerHighestMmr
     :<|> krPlayerByName
 
-type KrGmApi =
+type API =
+  Players
+    :<|> HighestWinRate
+    :<|> HighestMmr
+    :<|> NamedPlayer
+
+type Players =
   "gm-ladder"
     :> "kr"
     :> "players"
     :> Get '[JSON] [DbPlayer]
-    :<|> "gm-ladder"
-      :> "kr"
-      :> "player"
-      :> "highest-win-rate"
-      :> Get '[JSON] DbPlayer
-    :<|> "gm-ladder"
-      :> "kr"
-      :> "player"
-      :> "highest-mmr"
-      :> Get '[JSON] DbPlayer
-    :<|> "gm-ladder"
-      :> "kr"
-      :> "player"
-      :> QueryParam' '[Required] "name" Text
-      :> Get '[JSON] DbPlayer
+
+type HighestWinRate =
+  "gm-ladder"
+    :> "kr"
+    :> "player"
+    :> "highest-win-rate"
+    :> Get '[JSON] DbPlayer
+
+type HighestMmr =
+  "gm-ladder"
+    :> "kr"
+    :> "player"
+    :> "highest-mmr"
+    :> Get '[JSON] DbPlayer
+
+type NamedPlayer =
+  "gm-ladder"
+    :> "kr"
+    :> "player"
+    :> QueryParam' '[Required] "name" Text
+    :> Get '[JSON] DbPlayer
 
 allKrPlayers :: App [DbPlayer]
 allKrPlayers = do

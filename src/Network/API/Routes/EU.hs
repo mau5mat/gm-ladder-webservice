@@ -39,39 +39,51 @@ runEuPort port = run port euApp
 euApp :: Application
 euApp = serve euGmAPI euServer
 
-euGmAPI :: Proxy EuGmApi
+euGmAPI :: Proxy API
 euGmAPI = Proxy
 
-euServer :: Server EuGmApi
-euServer = hoistServer euGmAPI appToHandler euGmRoutes
+euServer :: Server API
+euServer = hoistServer euGmAPI appToHandler routes
 
-euGmRoutes :: ServerT EuGmApi App
-euGmRoutes =
+routes :: ServerT API App
+routes =
   allEuPlayers
     :<|> euPlayerHighestWinrate
     :<|> euPlayerHighestMmr
     :<|> euPlayerByName
 
-type EuGmApi =
+type API =
+  Players
+    :<|> HighestWinRate
+    :<|> HighestMmr
+    :<|> NamedPlayer
+
+type Players =
   "gm-ladder"
     :> "eu"
     :> "players"
     :> Get '[JSON] [DbPlayer]
-    :<|> "gm-ladder"
-      :> "eu"
-      :> "player"
-      :> "highest-win-rate"
-      :> Get '[JSON] DbPlayer
-    :<|> "gm-ladder"
-      :> "eu"
-      :> "player"
-      :> "highest-mmr"
-      :> Get '[JSON] DbPlayer
-    :<|> "gm-ladder"
-      :> "eu"
-      :> "player"
-      :> QueryParam' '[Required] "name" Text
-      :> Get '[JSON] DbPlayer
+
+type HighestWinRate =
+  "gm-ladder"
+    :> "eu"
+    :> "player"
+    :> "highest-win-rate"
+    :> Get '[JSON] DbPlayer
+
+type HighestMmr =
+  "gm-ladder"
+    :> "eu"
+    :> "player"
+    :> "highest-mmr"
+    :> Get '[JSON] DbPlayer
+
+type NamedPlayer =
+  "gm-ladder"
+    :> "eu"
+    :> "player"
+    :> QueryParam' '[Required] "name" Text
+    :> Get '[JSON] DbPlayer
 
 allEuPlayers :: (MonadIO m) => AppT m [DbPlayer]
 allEuPlayers = do
