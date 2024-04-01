@@ -57,6 +57,7 @@ library
     Environment.Config
     Model.DbPlayer.Domain
     Model.DbPlayer.Query
+    Model.DbPlayer.Service
     Model.DbPlayer.Types
     Model.LadderTeams.Types
     Model.Player.Adaptor

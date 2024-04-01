@@ -1,12 +1,14 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Network.API.Routes.NA where
+
+import qualified Model.DbPlayer.Domain as Domain
+import qualified Model.DbPlayer.Query as Query
 
 import App (
   App,
@@ -16,12 +18,7 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Reader (MonadIO)
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
-import Model.DbPlayer.Domain (
-  getPlayerByName,
-  getPlayerHighestMmr,
-  getPlayerWithHighestWinRate,
- )
-import Model.DbPlayer.Query (getPlayersByRegion)
+import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer)
 import Network.API.Config (appToHandler)
 import Network.Wai (Application)
@@ -85,36 +82,36 @@ type NamedPlayer =
     :> QueryParam' '[Required] "name" Text
     :> Get '[JSON] DbPlayer
 
-allNaPlayers :: (MonadIO m) => AppT m [DbPlayer]
+allNaPlayers :: App [DbPlayer]
 allNaPlayers = do
-  players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
+  players <- liftIO $ Query.getPlayersByRegion NA
   liftIO $ return players
 
-naPlayerByName :: (MonadIO m) => Text -> AppT m DbPlayer
+naPlayerByName :: Text -> App DbPlayer
 naPlayerByName name = do
-  players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
+  players <- liftIO $ Query.getPlayersByRegion NA
 
-  let player = getPlayerByName players name
+  let player = Domain.getPlayerByName players name
 
   case player of
     Nothing -> throwError err404
     Just p -> return p
 
-naPlayerHighestWinrate :: (MonadIO m) => AppT m DbPlayer
+naPlayerHighestWinrate :: App DbPlayer
 naPlayerHighestWinrate = do
-  players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
+  players <- liftIO $ Query.getPlayersByRegion NA
 
-  let player = getPlayerWithHighestWinRate players
+  let player = Domain.getPlayerWithHighestWinRate players
 
   case player of
     Nothing -> throwError err404
     Just p -> return p
 
-naPlayerHighestMmr :: (MonadIO m) => AppT m DbPlayer
+naPlayerHighestMmr :: App DbPlayer
 naPlayerHighestMmr = do
-  players <- liftIO $ getPlayersByRegion "players.sqlite3" 1
+  players <- liftIO $ Query.getPlayersByRegion NA
 
-  let player = getPlayerHighestMmr players
+  let player = Domain.getPlayerHighestMmr players
 
   case player of
     Nothing -> throwError err404

@@ -1,12 +1,14 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Network.API.Routes.KR where
+
+import qualified Model.DbPlayer.Domain as Domain
+import qualified Model.DbPlayer.Query as Query
 
 import App (
   App,
@@ -16,12 +18,7 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Reader (MonadIO)
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
-import Model.DbPlayer.Domain (
-  getPlayerByName,
-  getPlayerHighestMmr,
-  getPlayerWithHighestWinRate,
- )
-import Model.DbPlayer.Query (getPlayersByRegion)
+import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer)
 import Network.API.Config (appToHandler)
 import Network.Wai (Application)
@@ -87,14 +84,14 @@ type NamedPlayer =
 
 allKrPlayers :: App [DbPlayer]
 allKrPlayers = do
-  players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
+  players <- liftIO $ Query.getPlayersByRegion KR
   liftIO $ return players
 
 krPlayerByName :: Text -> App DbPlayer
 krPlayerByName name = do
-  players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
+  players <- liftIO $ Query.getPlayersByRegion KR
 
-  let player = getPlayerByName players name
+  let player = Domain.getPlayerByName players name
 
   case player of
     Nothing -> throwError err404
@@ -102,9 +99,9 @@ krPlayerByName name = do
 
 krPlayerHighestWinrate :: App DbPlayer
 krPlayerHighestWinrate = do
-  players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
+  players <- liftIO $ Query.getPlayersByRegion KR
 
-  let player = getPlayerWithHighestWinRate players
+  let player = Domain.getPlayerWithHighestWinRate players
 
   case player of
     Nothing -> throwError err404
@@ -112,9 +109,9 @@ krPlayerHighestWinrate = do
 
 krPlayerHighestMmr :: App DbPlayer
 krPlayerHighestMmr = do
-  players <- liftIO $ getPlayersByRegion "players.sqlite3" 3
+  players <- liftIO $ Query.getPlayersByRegion KR
 
-  let player = getPlayerHighestMmr players
+  let player = Domain.getPlayerHighestMmr players
 
   case player of
     Nothing -> throwError err404
