@@ -5,15 +5,18 @@ Backend webservice using Persistent, Servant, HSpec and more.
  
 - Refactoring work:
   - SQLite -> Postgres
-  - Basic GitHub Actions CI Pipeline
+  - Create a Docker container for the app
+    - Run pre-commit linting 
+    - Basic GitHub Actions CI Pipeline
   - General re-architecture of app
   - Refactoring repetitive code
+  - Add Logging middleware
   
 ## Description
 
 First and foremost, if anybody has any feedback or pointers into how to improve this project I would love to hear it.  Please leave a PR or Email me on mau5mat@gmail.com!
 
-This project was an exercise in learning Persistent/Servant/HSpec.  I also wanted to gain some more context for some advanced Haskell topics (such as Monad Transformer stacks) to better learn the langauge and become more familiar with a lot of common industry-used libraries and techniques.
+This project was an exercise in learning Persistent/Servant/HSpec.  I also wanted to gain some more context for some advanced Haskell topics (such as Monad Transformer stacks) to better learn the language and become more familiar with a lot of common industry-used libraries and techniques.
 
 The project has a few main goals :-
 
@@ -24,9 +27,6 @@ The project has a few main goals :-
 5.  Have some rudimentary testing in place to catch some easy bugs.
 
 I'm quite happy with how it turned out so far - I might plan to add more Endpoints and extend the functionality.  
-
-For the future I plan to use this as a backend for Elm, and SwiftUI apps.
-
 
 ## Authors
 
