@@ -1,4 +1,4 @@
-module Network.Service (getPlayersFromRegion) where
+module Network.Service (createService, Service (..)) where
 
 import qualified Model.Player.Adaptor as Adaptor
 
@@ -21,8 +21,19 @@ import Network.HTTP.Simple (
   parseRequest_,
  )
 
-getPlayersFromRegion :: Region -> IO [DbPlayer]
-getPlayersFromRegion region = do
+newtype Service = Service
+  { getPlayersFromRegion :: Region -> IO [DbPlayer]
+  }
+
+createService :: IO Service
+createService = do
+  pure
+    Service
+      { getPlayersFromRegion = getPlayersFromRegion_
+      }
+
+getPlayersFromRegion_ :: Region -> IO [DbPlayer]
+getPlayersFromRegion_ region = do
   regionData <- getGrandmastersFromRegion region
 
   let players = Adaptor.toPlayers regionData
