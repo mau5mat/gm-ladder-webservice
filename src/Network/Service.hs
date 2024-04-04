@@ -1,6 +1,7 @@
 module Network.Service (createService, Service (..)) where
 
-import qualified Model.Player.Adaptor as Adaptor
+import qualified Model.LadderTeams.Adaptor as LadderTeamsAdaptor
+import qualified Model.Player.Adaptor as PlayerAdaptor
 
 import BattleNet (createUrlWithRegion)
 
@@ -36,10 +37,10 @@ getPlayersFromRegion_ :: Region -> IO [DbPlayer]
 getPlayersFromRegion_ region = do
   regionData <- getGrandmastersFromRegion region
 
-  let players = Adaptor.toPlayers regionData
-  let playerInfos = concatMap Adaptor.toPlayerInfo players
+  let players = LadderTeamsAdaptor.toPlayers regionData
+  let playerInfos = concatMap PlayerAdaptor.toPlayerInfo players
   let combinedPlayerData = zip players playerInfos
-  let dbPlayers = fmap Adaptor.toDbPlayerFromTuple combinedPlayerData
+  let dbPlayers = fmap PlayerAdaptor.toDbPlayerFromTuple combinedPlayerData
 
   return dbPlayers
 

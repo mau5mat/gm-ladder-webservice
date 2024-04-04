@@ -8,7 +8,7 @@
 module Network.API.Routes.EU where
 
 import qualified Model.DbPlayer.Domain as Domain
-import qualified Model.DbPlayer.Query as Query
+import qualified Model.DbPlayer.Service as Service
 
 import App (App)
 
@@ -18,6 +18,7 @@ import Data.Proxy (Proxy (..))
 import Data.Text (Text)
 
 import Model.DbPlayer.Query (Region (..))
+import Model.DbPlayer.Service (createService)
 import Model.DbPlayer.Types (DbPlayer)
 
 import Network.API.Config (appToHandler)
@@ -31,17 +32,8 @@ import Servant (throwError)
 import Servant.API
 import Servant.Server (Server, ServerT, err404, hoistServer, serve)
 
-runPort :: Port -> IO ()
-runPort port = run port app
-
-app :: Application
-app = serve proxy server
-
-proxy :: Proxy API
-proxy = Proxy
-
-server :: Server API
-server = hoistServer proxy appToHandler routes
+routes_ :: ServerT API App
+routes_ = _
 
 routes :: ServerT API App
 routes =

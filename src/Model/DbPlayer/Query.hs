@@ -2,7 +2,8 @@
 
 module Model.DbPlayer.Query (
   Region (..),
-  getPlayersByRegion,
+  Service (..),
+  createService,
   regionToInt,
   regionToText,
 ) where
@@ -11,11 +12,22 @@ import qualified Environment.Config as Config
 
 import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text)
-import Database.Persist
+import Database.Persist (selectList, (==.))
 import Database.Persist.Sqlite (runSqlite)
-import Database.Persist.TH
+import Database.Persist.TH ()
+import Model.DbPlayer.Adaptor (fromEntityToDbPlayer)
 import Model.DbPlayer.Types
-import Model.Player.Adaptor (fromEntityToDbPlayer)
+
+newtype Service = Service
+  { getPlayersByRegion :: Region -> IO [DbPlayer]
+  }
+
+createService :: IO Service
+createService = do
+  pure
+    Service
+      { getPlayersByRegion = getPlayersByRegion_
+      }
 
 data Region
   = NA
@@ -36,12 +48,12 @@ regionToText region =
     EU -> "2"
     KR -> "3"
 
-getPlayersByRegion :: Region -> IO [DbPlayer]
-getPlayersByRegion r =
+getPlayersByRegion_ :: Region -> IO [DbPlayer]
+getPlayersByRegion_ region =
   runSqlite Config.databaseName $ do
-    let region = regionToInt r
+    let playerRegion = regionToInt region
 
-    players <- selectList [DbPlayerRegion ==. region] []
+    players <- selectList [DbPlayerRegion ==. playerRegion] []
 
     let dbPlayers = fmap fromEntityToDbPlayer players
 
