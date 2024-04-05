@@ -14,8 +14,9 @@ main = do
   let service = createService
 
   putStrLn "Running Requests.."
-  let _ = runRequests service
+  -- runRequests service
 
   putStrLn "Running Port.."
   -- runPort 8081
+  --
   return ()
