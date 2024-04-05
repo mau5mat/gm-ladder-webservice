@@ -25,8 +25,8 @@ import Servant (throwError)
 import Servant.API
 import Servant.Server (Server, ServerT, hoistServer, serve)
 
-runPort :: Port -> IO ()
-runPort port = run port app
+runPort :: Port -> App ()
+runPort port = liftIO $ run port app
 
 app :: Application
 app = serve proxy server

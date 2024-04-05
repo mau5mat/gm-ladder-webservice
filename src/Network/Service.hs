@@ -36,9 +36,9 @@ getPlayersFromRegion_ region = do
   regionData <- getGrandmastersFromRegion region
 
   let players = LadderTeamsAdaptor.toPlayers regionData
-  let playerInfos = concatMap PlayerAdaptor.toPlayerInfo players
-  let combinedPlayerData = zip players playerInfos
-  let dbPlayers = fmap PlayerAdaptor.toDbPlayerFromTuple combinedPlayerData
+      playerInfos = concatMap PlayerAdaptor.toPlayerInfo players
+      combinedPlayerData = zip players playerInfos
+      dbPlayers = fmap PlayerAdaptor.toDbPlayerFromTuple combinedPlayerData
 
   return dbPlayers
 

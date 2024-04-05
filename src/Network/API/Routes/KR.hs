@@ -26,18 +26,6 @@ import Servant (throwError)
 import Servant.API
 import Servant.Server (Server, ServerT, err404, hoistServer, serve)
 
-runPort :: Port -> IO ()
-runPort port = run port app
-
-app :: Application
-app = serve proxy server
-
-proxy :: Proxy API
-proxy = Proxy
-
-server :: Server API
-server = hoistServer proxy appToHandler routes
-
 routes :: ServerT API App
 routes =
   allPlayers
