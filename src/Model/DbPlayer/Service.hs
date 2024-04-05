@@ -26,12 +26,12 @@ import Servant.Server (Server, ServerT, err404, hoistServer, serve)
 
 data Service = Service
   { getPlayers :: Query.Service -> Region -> App [DbPlayer]
-  , playerByName :: Query.Service -> Region -> Text -> App DbPlayer
+  , playerByName :: Query.Service -> Text -> Region -> App DbPlayer
   , playerHighestWinrate :: Query.Service -> Region -> App DbPlayer
   , playerHighestMmr :: Query.Service -> Region -> App DbPlayer
   }
 
-createService :: IO Service
+createService :: App Service
 createService =
   pure
     Service
@@ -43,13 +43,13 @@ createService =
 
 getPlayers_ :: Query.Service -> Region -> App [DbPlayer]
 getPlayers_ service region = do
-  players <- liftIO $ Query.getPlayersByRegion service region
+  players <- Query.getPlayersByRegion service region
 
   liftIO $ return players
 
-playerByName_ :: Query.Service -> Region -> Text -> App DbPlayer
-playerByName_ service region name = do
-  players <- liftIO $ Query.getPlayersByRegion service region
+playerByName_ :: Query.Service -> Text -> Region -> App DbPlayer
+playerByName_ service name region = do
+  players <- Query.getPlayersByRegion service region
 
   let player = Domain.getPlayerByName players name
 
@@ -59,7 +59,7 @@ playerByName_ service region name = do
 
 playerHighestWinrate_ :: Query.Service -> Region -> App DbPlayer
 playerHighestWinrate_ service region = do
-  players <- liftIO $ Query.getPlayersByRegion service region
+  players <- Query.getPlayersByRegion service region
 
   let player = Domain.getPlayerWithHighestWinRate players
 
@@ -69,7 +69,7 @@ playerHighestWinrate_ service region = do
 
 playerHighestMmr_ :: Query.Service -> Region -> App DbPlayer
 playerHighestMmr_ service region = do
-  players <- liftIO $ Query.getPlayersByRegion service region
+  players <- Query.getPlayersByRegion service region
 
   let player = Domain.getPlayerHighestMmr players
 

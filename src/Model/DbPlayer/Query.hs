@@ -10,6 +10,7 @@ module Model.DbPlayer.Query (
 
 import qualified Environment.Config as Config
 
+import App (App, AppT (runApp))
 import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text)
 import Database.Persist (selectList, (==.))
@@ -19,10 +20,10 @@ import Model.DbPlayer.Adaptor (fromEntityToDbPlayer)
 import Model.DbPlayer.Types
 
 newtype Service = Service
-  { getPlayersByRegion :: Region -> IO [DbPlayer]
+  { getPlayersByRegion :: Region -> App [DbPlayer]
   }
 
-createService :: IO Service
+createService :: App Service
 createService = do
   pure
     Service
@@ -48,9 +49,9 @@ regionToText region =
     EU -> "2"
     KR -> "3"
 
-getPlayersByRegion_ :: Region -> IO [DbPlayer]
+getPlayersByRegion_ :: Region -> App [DbPlayer]
 getPlayersByRegion_ region =
-  runSqlite Config.databaseName $ do
+  liftIO $ runSqlite Config.databaseName $ do
     let playerRegion = regionToInt region
 
     players <- selectList [DbPlayerRegion ==. playerRegion] []

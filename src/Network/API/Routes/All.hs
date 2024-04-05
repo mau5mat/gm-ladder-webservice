@@ -42,6 +42,12 @@ server :: Server API
 server = hoistServer proxy appToHandler routes
 
 routes :: ServerT API App
-routes = NA.routes :<|> EU.routes :<|> KR.routes
+routes =
+  NA.routes
+    :<|> EU.routes
+    :<|> KR.routes
 
-type API = NA.API :<|> EU.API :<|> KR.API
+type API =
+  NA.API
+    :<|> EU.API
+    :<|> KR.API

@@ -7,8 +7,8 @@
 
 module Network.API.Routes.NA where
 
-import qualified Model.DbPlayer.Domain as Domain
 import qualified Model.DbPlayer.Query as Query
+import qualified Model.DbPlayer.Service as Service
 
 import App (App)
 
@@ -45,10 +45,10 @@ server = hoistServer proxy appToHandler routes
 
 routes :: ServerT API App
 routes =
-  allNaPlayers
-    :<|> naPlayerHighestWinrate
-    :<|> naPlayerHighestMmr
-    :<|> naPlayerByName
+  allPlayers
+    :<|> playerHighestWinrate
+    :<|> playerHighestMmr
+    :<|> playerByName
 
 type API =
   Players
@@ -83,37 +83,30 @@ type NamedPlayer =
     :> QueryParam' '[Required] "name" Text
     :> Get '[JSON] DbPlayer
 
-allNaPlayers :: App [DbPlayer]
-allNaPlayers = do
-  players <- liftIO $ Query.getPlayersByRegion NA
-  liftIO $ return players
+allPlayers :: App [DbPlayer]
+allPlayers = do
+  s1 <- Service.createService
+  s2 <- Query.createService
 
-naPlayerByName :: Text -> App DbPlayer
-naPlayerByName name = do
-  players <- liftIO $ Query.getPlayersByRegion NA
+  Service.getPlayers s1 s2 NA
 
-  let player = Domain.getPlayerByName players name
+playerByName :: Text -> App DbPlayer
+playerByName name = do
+  s1 <- Service.createService
+  s2 <- Query.createService
 
-  case player of
-    Nothing -> throwError err404
-    Just p -> return p
+  Service.playerByName s1 s2 name NA
 
-naPlayerHighestWinrate :: App DbPlayer
-naPlayerHighestWinrate = do
-  players <- liftIO $ Query.getPlayersByRegion NA
+playerHighestWinrate :: App DbPlayer
+playerHighestWinrate = do
+  s1 <- Service.createService
+  s2 <- Query.createService
 
-  let player = Domain.getPlayerWithHighestWinRate players
+  Service.playerHighestWinrate s1 s2 NA
 
-  case player of
-    Nothing -> throwError err404
-    Just p -> return p
+playerHighestMmr :: App DbPlayer
+playerHighestMmr = do
+  s1 <- Service.createService
+  s2 <- Query.createService
 
-naPlayerHighestMmr :: App DbPlayer
-naPlayerHighestMmr = do
-  players <- liftIO $ Query.getPlayersByRegion NA
-
-  let player = Domain.getPlayerHighestMmr players
-
-  case player of
-    Nothing -> throwError err404
-    Just p -> return p
+  Service.playerHighestMmr s1 s2 NA

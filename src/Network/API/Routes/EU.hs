@@ -7,40 +7,31 @@
 
 module Network.API.Routes.EU where
 
-import qualified Model.DbPlayer.Domain as Domain
+import qualified Model.DbPlayer.Query as Query
 import qualified Model.DbPlayer.Service as Service
 
 import App (App)
-
 import Control.Monad.IO.Class (liftIO)
-
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
-
 import Model.DbPlayer.Query (Region (..))
-import Model.DbPlayer.Service (createService)
 import Model.DbPlayer.Types (DbPlayer)
-
 import Network.API.Config (appToHandler)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (
   Port,
   run,
  )
-
 import Servant (throwError)
 import Servant.API
 import Servant.Server (Server, ServerT, err404, hoistServer, serve)
 
-routes_ :: ServerT API App
-routes_ = _
-
 routes :: ServerT API App
 routes =
-  allEuPlayers
-    :<|> euPlayerHighestWinrate
-    :<|> euPlayerHighestMmr
-    :<|> euPlayerByName
+  allPlayers
+    :<|> playerHighestWinrate
+    :<|> playerHighestMmr
+    :<|> playerByName
 
 type API =
   Players
@@ -75,38 +66,30 @@ type NamedPlayer =
     :> QueryParam' '[Required] "name" Text
     :> Get '[JSON] DbPlayer
 
-allEuPlayers :: App [DbPlayer]
-allEuPlayers = do
-  players <- liftIO $ Query.getPlayersByRegion EU
+allPlayers :: App [DbPlayer]
+allPlayers = do
+  s1 <- Service.createService
+  s2 <- Query.createService
 
-  liftIO $ return players
+  Service.getPlayers s1 s2 EU
 
-euPlayerByName :: Text -> App DbPlayer
-euPlayerByName name = do
-  players <- liftIO $ Query.getPlayersByRegion EU
+playerByName :: Text -> App DbPlayer
+playerByName name = do
+  s1 <- Service.createService
+  s2 <- Query.createService
 
-  let player = Domain.getPlayerByName players name
+  Service.playerByName s1 s2 name EU
 
-  case player of
-    Nothing -> throwError err404
-    Just p -> return p
+playerHighestWinrate :: App DbPlayer
+playerHighestWinrate = do
+  s1 <- Service.createService
+  s2 <- Query.createService
 
-euPlayerHighestWinrate :: App DbPlayer
-euPlayerHighestWinrate = do
-  players <- liftIO $ Query.getPlayersByRegion EU
+  Service.playerHighestWinrate s1 s2 EU
 
-  let player = Domain.getPlayerWithHighestWinRate players
+playerHighestMmr :: App DbPlayer
+playerHighestMmr = do
+  s1 <- Service.createService
+  s2 <- Query.createService
 
-  case player of
-    Nothing -> throwError err404
-    Just p -> return p
-
-euPlayerHighestMmr :: App DbPlayer
-euPlayerHighestMmr = do
-  players <- liftIO $ Query.getPlayersByRegion EU
-
-  let player = Domain.getPlayerHighestMmr players
-
-  case player of
-    Nothing -> throwError err404
-    Just p -> return p
+  Service.playerHighestMmr s1 s2 EU
