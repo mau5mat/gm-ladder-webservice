@@ -40,7 +40,7 @@ executable sc2-gm-ladder-backend
     , servant
     , servant-server
     , text
-    , unliftio
+    , unliftio-core
     , wai
     , warp
 
@@ -89,7 +89,7 @@ library
     , servant
     , servant-server
     , text
-    , unliftio
+    , unliftio-core
     , wai
     , warp
 

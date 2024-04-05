@@ -68,28 +68,28 @@ type NamedPlayer =
 
 allPlayers :: App [DbPlayer]
 allPlayers = do
-  s1 <- Service.createService
-  s2 <- Query.createService
+  let s1 = Service.createService
+      s2 = Query.createService
 
   Service.getPlayers s1 s2 KR
 
 playerByName :: Text -> App DbPlayer
 playerByName name = do
-  s1 <- Service.createService
-  s2 <- Query.createService
+  let s1 = Service.createService
+      s2 = Query.createService
 
   Service.playerByName s1 s2 name KR
 
 playerHighestWinrate :: App DbPlayer
 playerHighestWinrate = do
-  s1 <- Service.createService
-  s2 <- Query.createService
+  let s1 = Service.createService
+      s2 = Query.createService
 
   Service.playerHighestWinrate s1 s2 KR
 
 playerHighestMmr :: App DbPlayer
 playerHighestMmr = do
-  s1 <- Service.createService
-  s2 <- Query.createService
+  let s1 = Service.createService
+      s2 = Query.createService
 
   Service.playerHighestMmr s1 s2 KR

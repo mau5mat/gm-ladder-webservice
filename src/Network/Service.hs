@@ -24,12 +24,11 @@ newtype Service = Service
   { getPlayersFromRegion :: Region -> App [DbPlayer]
   }
 
-createService :: App Service
-createService = do
-  pure
-    Service
-      { getPlayersFromRegion = getPlayersFromRegion_
-      }
+createService :: Service
+createService =
+  Service
+    { getPlayersFromRegion = getPlayersFromRegion_
+    }
 
 getPlayersFromRegion_ :: Region -> App [DbPlayer]
 getPlayersFromRegion_ region = do

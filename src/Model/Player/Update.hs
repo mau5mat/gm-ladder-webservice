@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Model.Player.Update (runRequest) where
+module Model.Player.Update (runRequests) where
 
 import qualified Environment.Config as Config
 import qualified Network.Service as Network
@@ -8,14 +8,15 @@ import qualified Network.Service as Network
 import App (App)
 import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text)
+import Data.Text.Array (run)
 import Database.Persist (Filter, deleteWhere, insert)
 import Database.Persist.Sqlite (runSqlite)
 import Database.Persist.TH ()
 import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer, migrateDbEntity)
 
-runRequest :: Network.Service -> App ()
-runRequest service = do
+runRequests :: Network.Service -> App ()
+runRequests service = do
   krPlayers <- Network.getPlayersFromRegion service KR
   naPlayers <- Network.getPlayersFromRegion service NA
   euPlayers <- Network.getPlayersFromRegion service EU

@@ -31,15 +31,14 @@ data Service = Service
   , playerHighestMmr :: Query.Service -> Region -> App DbPlayer
   }
 
-createService :: App Service
+createService :: Service
 createService =
-  pure
-    Service
-      { getPlayers = getPlayers_
-      , playerByName = playerByName_
-      , playerHighestWinrate = playerHighestWinrate_
-      , playerHighestMmr = playerHighestMmr_
-      }
+  Service
+    { getPlayers = getPlayers_
+    , playerByName = playerByName_
+    , playerHighestWinrate = playerHighestWinrate_
+    , playerHighestMmr = playerHighestMmr_
+    }
 
 getPlayers_ :: Query.Service -> Region -> App [DbPlayer]
 getPlayers_ service region = do

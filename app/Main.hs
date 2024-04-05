@@ -1,7 +1,10 @@
 module Main where
 
+import App (App)
+import Conduit (MonadIO (liftIO))
+import Control.Monad.IO.Unlift (unliftIO)
 import Data.Text (Text)
-import Model.Player.Update (runRequest)
+import Model.Player.Update (runRequests)
 import Network.API.Routes.All (runPort)
 import Network.Service (createService)
 import Servant (serveWithContext)
@@ -9,8 +12,11 @@ import Servant (serveWithContext)
 main :: IO ()
 main = do
   putStrLn "Starting App.."
-  service <- createService
-  putStrLn "Running Request.."
-  runRequest service
+  let service = createService
 
--- runPort 8081
+  putStrLn "Running Requests.."
+  let _ = runRequests service
+
+  putStrLn "Running Port.."
+  -- runPort 8081
+  return ()
