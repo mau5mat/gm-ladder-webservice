@@ -4,16 +4,13 @@ import qualified Model.LadderTeams.Adaptor as LadderTeamsAdaptor
 import qualified Model.Player.Adaptor as PlayerAdaptor
 
 import BattleNet (createUrlWithRegion)
-
 import Data.Text (
   Text,
   unpack,
  )
-
 import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer)
 import Model.LadderTeams.Types (LadderTeams)
-
 import Network.HTTP.Simple (
   Request,
   Response,

@@ -12,19 +12,15 @@ import qualified Network.API.Routes.KR as KR
 import qualified Network.API.Routes.NA as NA
 
 import App (App)
-
 import Control.Monad.IO.Class (liftIO)
-
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
-
 import Network.API.Config (appToHandler)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (
   Port,
   run,
  )
-
 import Servant (throwError)
 import Servant.API
 import Servant.Server (Server, ServerT, hoistServer, serve)
