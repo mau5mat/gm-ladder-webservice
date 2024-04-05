@@ -2,7 +2,6 @@ module Main where
 
 import App (App)
 import Conduit (MonadIO (liftIO))
-import Control.Monad.IO.Unlift (unliftIO)
 import Data.Text (Text)
 import Model.Player.Update (runRequests)
 import Network.API.Routes.All (runPort)
