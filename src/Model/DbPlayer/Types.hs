@@ -17,6 +17,8 @@
 
 module Model.DbPlayer.Types where
 
+import App (App)
+import Conduit (MonadIO (liftIO))
 import Data.Text (Text)
 import Database.Persist.Sqlite
 import Database.Persist.TH
@@ -40,8 +42,8 @@ DbPlayer json
     deriving Show Eq
 |]
 
-migrateDbEntity :: IO ()
+migrateDbEntity :: App ()
 migrateDbEntity =
-  runSqlite Config.databaseName $ do
+  liftIO $ runSqlite Config.databaseName $ do
     runMigration migrateAll
     return ()

@@ -3,6 +3,7 @@ module Network.Service (createService, Service (..)) where
 import qualified Model.LadderTeams.Adaptor as LadderTeamsAdaptor
 import qualified Model.Player.Adaptor as PlayerAdaptor
 
+import App (App)
 import BattleNet (createUrlWithRegion)
 import Data.Text (
   Text,
@@ -20,17 +21,17 @@ import Network.HTTP.Simple (
  )
 
 newtype Service = Service
-  { getPlayersFromRegion :: Region -> IO [DbPlayer]
+  { getPlayersFromRegion :: Region -> App [DbPlayer]
   }
 
-createService :: IO Service
+createService :: App Service
 createService = do
   pure
     Service
       { getPlayersFromRegion = getPlayersFromRegion_
       }
 
-getPlayersFromRegion_ :: Region -> IO [DbPlayer]
+getPlayersFromRegion_ :: Region -> App [DbPlayer]
 getPlayersFromRegion_ region = do
   regionData <- getGrandmastersFromRegion region
 
@@ -41,7 +42,7 @@ getPlayersFromRegion_ region = do
 
   return dbPlayers
 
-getGrandmastersFromRegion :: Region -> IO LadderTeams
+getGrandmastersFromRegion :: Region -> App LadderTeams
 getGrandmastersFromRegion region = do
   response <- httpJSON $ ladderTeamsRequestUrl region
 

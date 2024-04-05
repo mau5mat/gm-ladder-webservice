@@ -5,6 +5,7 @@ module Model.Player.Update (runRequest) where
 import qualified Environment.Config as Config
 import qualified Network.Service as Network
 
+import App (App)
 import Control.Monad.IO.Class (liftIO)
 import Data.Text (Text)
 import Database.Persist (Filter, deleteWhere, insert)
@@ -13,7 +14,7 @@ import Database.Persist.TH ()
 import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer, migrateDbEntity)
 
-runRequest :: Network.Service -> IO ()
+runRequest :: Network.Service -> App ()
 runRequest service = do
   krPlayers <- Network.getPlayersFromRegion service KR
   naPlayers <- Network.getPlayersFromRegion service NA
@@ -25,21 +26,21 @@ runRequest service = do
 
   return ()
 
-insertDbPlayers :: [DbPlayer] -> IO ()
+insertDbPlayers :: [DbPlayer] -> App ()
 insertDbPlayers entities =
-  runSqlite Config.databaseName $ do
+  liftIO $ runSqlite Config.databaseName $ do
     players <- mapM insert entities
 
     liftIO $ print players
 
-deleteAllPlayers :: IO ()
+deleteAllPlayers :: App ()
 deleteAllPlayers =
-  runSqlite Config.databaseName $ do
+  liftIO $ runSqlite Config.databaseName $ do
     deleteWhere ([] :: [Filter DbPlayer])
 
     liftIO $ putStr "deleted db players"
 
-migrateAndInsertDbPlayers :: [DbPlayer] -> IO ()
+migrateAndInsertDbPlayers :: [DbPlayer] -> App ()
 migrateAndInsertDbPlayers dbPlayers = do
   migrateDbEntity >> insertDbPlayers dbPlayers
 
