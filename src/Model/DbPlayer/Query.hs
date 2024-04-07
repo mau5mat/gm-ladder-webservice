@@ -10,8 +10,9 @@ module Model.DbPlayer.Query (
 
 import qualified Environment.Config as Config
 
-import App (App, AppT (runApp))
+import App (App, runApp)
 import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Unlift (unliftIO)
 import Data.Text (Text)
 import Database.Persist (selectList, (==.))
 import Database.Persist.Sqlite (runSqlite)
@@ -50,7 +51,7 @@ regionToText region =
 
 getPlayersByRegion_ :: Region -> App [DbPlayer]
 getPlayersByRegion_ region =
-  liftIO $ runSqlite Config.databaseName $ do
+  runSqlite Config.databaseName $ do
     let playerRegion = regionToInt region
 
     players <- selectList [DbPlayerRegion ==. playerRegion] []

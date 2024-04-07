@@ -1,21 +1,19 @@
 module Main where
 
-import qualified Network.Service as Network
-
-import App (App, runApp)
-import Control.Monad.IO.Class (liftIO)
+import Data.Text (Text)
 import Model.Player.Update (runRequests)
 import Network.API.Routes.All (runPort)
+import Network.Service (createService)
+import Servant (serveWithContext)
 
 main :: IO ()
 main = do
   putStrLn "Starting App.."
-  let service = Network.createService
 
-  putStrLn "Running Requests.."
-  -- runRequests service
+  let service = createService
 
-  putStrLn "Running Port.."
+  putStrLn "Running Request.."
 
-  -- runPort 8081
-  return ()
+-- runRequest service
+
+-- runPort 8081
