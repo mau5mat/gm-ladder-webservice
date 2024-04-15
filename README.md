@@ -8,7 +8,10 @@ Backend webservice using Persistent, Servant, HSpec and more.
   - Create a Docker container for the app
     - Run pre-commit linting 
     - Basic GitHub Actions CI Pipeline
-  - General re-architecture of app
+  - General re-architecture of app:
+    - App type from monad transformer stack to Eff
+    - Servant Record API's
+    - .. And more
   - Refactoring repetitive code
   - Add Logging middleware
   
