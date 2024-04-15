@@ -3,6 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Network.API.Routes.All where
@@ -15,7 +16,6 @@ import App (App)
 import Control.Monad.IO.Class (liftIO)
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
-import Network.API.Config (appToHandler)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (
   Port,
@@ -29,13 +29,10 @@ runPort :: Port -> App ()
 runPort port = liftIO $ run port app
 
 app :: Application
-app = serve proxy server
-
-proxy :: Proxy API
-proxy = Proxy
+app = serve (Proxy @API) server
 
 server :: Server API
-server = hoistServer proxy appToHandler routes
+server = hoistServer (Proxy @API) routes
 
 routes :: ServerT API App
 routes =

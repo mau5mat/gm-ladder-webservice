@@ -16,7 +16,6 @@ import Data.Proxy (Proxy (..))
 import Data.Text (Text)
 import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer)
-import Network.API.Config (appToHandler)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (
   Port,

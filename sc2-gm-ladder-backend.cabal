@@ -78,6 +78,7 @@ library
     , aeson
     , base                 ^>=4.17.2.0
     , conduit
+    , effectful-core
     , hspec
     , http-client
     , http-conduit

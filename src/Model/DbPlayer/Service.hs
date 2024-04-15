@@ -6,21 +6,18 @@ import qualified Model.DbPlayer.Query as Query
 
 import App (
   App,
-  AppT (..),
  )
-import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Reader (MonadIO)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
+import Effectful.Error.Static (Error, runErrorNoCallStack, throwError)
 import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer (..))
-import Network.API.Config (appToHandler)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (
   Port,
   run,
  )
-import Servant (throwError)
 import Servant.API
 import Servant.Server (Server, ServerT, err404, hoistServer, serve)
 
