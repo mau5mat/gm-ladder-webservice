@@ -1,4 +1,6 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
@@ -11,84 +13,84 @@ import qualified Model.DbPlayer.Query as Query
 import qualified Model.DbPlayer.Service as Service
 
 import App (App)
-import Control.Monad.IO.Class (liftIO)
-import Data.Proxy (Proxy (..))
 import Data.Text (Text)
+import GHC.Generics (Generic)
 import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer)
-import Network.Wai (Application)
-import Network.Wai.Handler.Warp (
-  Port,
-  run,
- )
-import Servant (throwError)
+import Network.API.Config (appToHandler)
+import Servant (Handler)
 import Servant.API
-import Servant.Server (Server, ServerT, err404, hoistServer, serve)
+import Servant.Server.Generic (AsServer)
 
-routes :: ServerT API App
-routes =
-  allPlayers
-    :<|> playerHighestWinrate
-    :<|> playerHighestMmr
-    :<|> playerByName
+-- Attempt at making Records style API with Servant
 
-type API =
-  Players
-    :<|> HighestWinRate
-    :<|> HighestMmr
-    :<|> NamedPlayer
+type EuPlayersAPI = NamedRoutes PlayersAPI
 
-type Players =
-  "gm-ladder"
-    :> "eu"
-    :> "players"
-    :> Get '[JSON] [DbPlayer]
+data PlayersAPI mode = PlayersAPI
+  { players :: mode :- "gm-ladder" :> "eu" :> "players" :> Get '[JSON] [DbPlayer]
+  , player :: mode :- "gm-ladder" :> "eu" :> "player" :> NamedRoutes PlayerAPI
+  }
+  deriving stock (Generic)
 
-type HighestWinRate =
-  "gm-ladder"
-    :> "eu"
-    :> "player"
-    :> "highest-win-rate"
-    :> Get '[JSON] DbPlayer
+data PlayerAPI mode = PlayerAPI
+  { name :: mode :- NamedRoutes PlayerNameAPI
+  , highestWinRate :: mode :- "highest-win-rate" :> Get '[JSON] DbPlayer
+  , highestMmr :: mode :- "highest-mmr" :> Get '[JSON] DbPlayer
+  }
+  deriving stock (Generic)
 
-type HighestMmr =
-  "gm-ladder"
-    :> "eu"
-    :> "player"
-    :> "highest-mmr"
-    :> Get '[JSON] DbPlayer
+newtype PlayerNameAPI mode = PlayerNameAPI
+  { namedPlayer :: mode :- Capture "name" PlayerName :> Get '[JSON] DbPlayer
+  }
+  deriving stock (Generic)
 
-type NamedPlayer =
-  "gm-ladder"
-    :> "eu"
-    :> "player"
-    :> QueryParam' '[Required] "name" Text
-    :> Get '[JSON] DbPlayer
+playersHandler :: PlayersAPI AsServer
+playersHandler =
+  PlayersAPI
+    { players = allPlayers
+    , player = playerHandler
+    }
 
-allPlayers :: App [DbPlayer]
+playerHandler :: PlayerAPI AsServer
+playerHandler =
+  PlayerAPI
+    { name = playerNameHandler
+    , highestWinRate = playerHighestWinrate
+    , highestMmr = playerHighestMmr
+    }
+
+playerNameHandler :: PlayerNameAPI AsServer
+playerNameHandler =
+  PlayerNameAPI
+    { namedPlayer = playerByName
+    }
+
+type PlayerName = Text
+
+allPlayers :: Handler [DbPlayer]
 allPlayers = do
   let s1 = Service.createService
       s2 = Query.createService
 
-  Service.getPlayers s1 s2 EU
+  appToHandler $ Service.getPlayers s1 s2 EU
 
-playerByName :: Text -> App DbPlayer
-playerByName name = do
+playerByName :: PlayerName -> Handler DbPlayer
+playerByName playerName = do
   let s1 = Service.createService
       s2 = Query.createService
 
-  Service.playerByName s1 s2 name EU
+  appToHandler $ Service.playerByName s1 s2 playerName EU
 
-playerHighestWinrate :: App DbPlayer
+playerHighestWinrate :: Handler DbPlayer
 playerHighestWinrate = do
   let s1 = Service.createService
       s2 = Query.createService
 
-  Service.playerHighestWinrate s1 s2 EU
+  appToHandler $ Service.playerHighestWinrate s1 s2 EU
 
-playerHighestMmr :: App DbPlayer
+playerHighestMmr :: Handler DbPlayer
 playerHighestMmr = do
   let s1 = Service.createService
       s2 = Query.createService
 
-  Service.playerHighestMmr s1 s2 EU
+  appToHandler $ Service.playerHighestMmr s1 s2 EU

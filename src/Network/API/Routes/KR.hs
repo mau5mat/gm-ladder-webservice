@@ -1,4 +1,6 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
@@ -14,6 +16,7 @@ import App (App)
 import Control.Monad.IO.Class (liftIO)
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
+import GHC.Generics (Generic)
 import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer)
 import Network.Wai (Application)
@@ -24,6 +27,24 @@ import Network.Wai.Handler.Warp (
 import Servant (throwError)
 import Servant.API
 import Servant.Server (Server, ServerT, err404, hoistServer, serve)
+
+-- Attempt at making Records style API with Servant
+--
+
+type KrPlayersAPI = NamedRoutes PlayersAPI
+
+data PlayersAPI mode = PlayersAPI
+  { players :: mode :- "gm-ladder" :> "kr" :> "players" :> Get '[JSON] [DbPlayer]
+  , player :: mode :- "gm-ladder" :> "kr" :> "player" :> NamedRoutes PlayerAPI
+  }
+  deriving stock (Generic)
+
+data PlayerAPI mode = PlayerAPI
+  { namedPlayer :: mode :- QueryParam' '[Required] "name" Text :> Get '[JSON] DbPlayer
+  , highestWinRate :: mode :- "highest-win-rate" :> Get '[JSON] DbPlayer
+  , highestMmr :: mode :- "highest-mmr" :> Get '[JSON] DbPlayer
+  }
+  deriving stock (Generic)
 
 routes :: ServerT API App
 routes =
