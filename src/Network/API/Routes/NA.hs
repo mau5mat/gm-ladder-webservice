@@ -7,109 +7,90 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Network.API.Routes.NA where
+module Network.API.Routes.NA (NaPlayersAPI, PlayersAPI, playersHandler) where
 
 import qualified Model.DbPlayer.Query as Query
 import qualified Model.DbPlayer.Service as Service
 
 import App (App)
-import Control.Monad.IO.Class (liftIO)
-import Data.Proxy (Proxy (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import Model.DbPlayer.Query (Region (..))
 import Model.DbPlayer.Types (DbPlayer)
-import Network.Wai (Application)
-import Network.Wai.Handler.Warp (
-  Port,
-  run,
- )
-import Servant (throwError)
+import Network.API.Config (appToHandler)
+import Servant (Handler)
 import Servant.API
-import Servant.Server (Server, ServerT, err404, hoistServer, serve)
+import Servant.Server.Generic (AsServer)
 
 -- Attempt at making Records style API with Servant
---
 
-type EuPlayersAPI = NamedRoutes PlayersAPI
+type NaPlayersAPI = NamedRoutes PlayersAPI
 
 data PlayersAPI mode = PlayersAPI
-  { players :: mode :- "gm-ladder" :> "na" :> "players" :> Get '[JSON] [DbPlayer]
-  , player :: mode :- "gm-ladder" :> "na" :> "player" :> NamedRoutes PlayerAPI
+  { players :: mode :- "gm-ladder" :> "eu" :> "players" :> Get '[JSON] [DbPlayer]
+  , player :: mode :- "gm-ladder" :> "eu" :> "player" :> NamedRoutes PlayerAPI
   }
   deriving stock (Generic)
 
 data PlayerAPI mode = PlayerAPI
-  { namedPlayer :: mode :- QueryParam' '[Required] "name" Text :> Get '[JSON] DbPlayer
+  { name :: mode :- NamedRoutes PlayerNameAPI
   , highestWinRate :: mode :- "highest-win-rate" :> Get '[JSON] DbPlayer
   , highestMmr :: mode :- "highest-mmr" :> Get '[JSON] DbPlayer
   }
   deriving stock (Generic)
 
-routes :: ServerT API App
-routes =
-  allPlayers
-    :<|> playerHighestWinrate
-    :<|> playerHighestMmr
-    :<|> playerByName
+newtype PlayerNameAPI mode = PlayerNameAPI
+  { namedPlayer :: mode :- Capture "name" PlayerName :> Get '[JSON] DbPlayer
+  }
+  deriving stock (Generic)
 
-type API =
-  Players
-    :<|> HighestWinRate
-    :<|> HighestMmr
-    :<|> NamedPlayer
+type PlayerName = Text
 
-type Players =
-  "gm-ladder"
-    :> "na"
-    :> "players"
-    :> Get '[JSON] [DbPlayer]
+playersHandler :: PlayersAPI AsServer
+playersHandler =
+  PlayersAPI
+    { players = allPlayers
+    , player = playerHandler
+    }
 
-type HighestWinRate =
-  "gm-ladder"
-    :> "na"
-    :> "player"
-    :> "highest-win-rate"
-    :> Get '[JSON] DbPlayer
+playerHandler :: PlayerAPI AsServer
+playerHandler =
+  PlayerAPI
+    { name = playerNameHandler
+    , highestWinRate = playerHighestWinrate
+    , highestMmr = playerHighestMmr
+    }
 
-type HighestMmr =
-  "gm-ladder"
-    :> "na"
-    :> "player"
-    :> "highest-mmr"
-    :> Get '[JSON] DbPlayer
+playerNameHandler :: PlayerNameAPI AsServer
+playerNameHandler =
+  PlayerNameAPI
+    { namedPlayer = playerByName
+    }
 
-type NamedPlayer =
-  "gm-ladder"
-    :> "na"
-    :> "player"
-    :> QueryParam' '[Required] "name" Text
-    :> Get '[JSON] DbPlayer
-
-allPlayers :: App [DbPlayer]
+allPlayers :: Handler [DbPlayer]
 allPlayers = do
   let s1 = Service.createService
       s2 = Query.createService
 
-  Service.getPlayers s1 s2 NA
+  appToHandler $ Service.getPlayers s1 s2 EU
 
-playerByName :: Text -> App DbPlayer
-playerByName name = do
+playerByName :: PlayerName -> Handler DbPlayer
+playerByName playerName = do
   let s1 = Service.createService
       s2 = Query.createService
 
-  Service.playerByName s1 s2 name NA
+  appToHandler $ Service.playerByName s1 s2 playerName EU
 
-playerHighestWinrate :: App DbPlayer
+playerHighestWinrate :: Handler DbPlayer
 playerHighestWinrate = do
   let s1 = Service.createService
       s2 = Query.createService
 
-  Service.playerHighestWinrate s1 s2 NA
+  appToHandler $ Service.playerHighestWinrate s1 s2 EU
 
-playerHighestMmr :: App DbPlayer
+playerHighestMmr :: Handler DbPlayer
 playerHighestMmr = do
   let s1 = Service.createService
       s2 = Query.createService
 
-  Service.playerHighestMmr s1 s2 NA
+  appToHandler $ Service.playerHighestMmr s1 s2 EU

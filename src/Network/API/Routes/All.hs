@@ -1,4 +1,6 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
@@ -16,6 +18,7 @@ import App (App)
 import Control.Monad.IO.Class (liftIO)
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
+import GHC.Generics (Generic)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (
   Port,
@@ -24,23 +27,28 @@ import Network.Wai.Handler.Warp (
 import Servant (throwError)
 import Servant.API
 import Servant.Server (Server, ServerT, hoistServer, serve)
+import Servant.Server.Generic (AsServer)
 
 runPort :: Port -> App ()
 runPort port = liftIO $ run port app
 
+api :: Proxy API
+api = Proxy @API
+
 app :: Application
-app = serve (Proxy @API) server
+app = _ _ _
 
-server :: Server API
-server = hoistServer (Proxy @API) routes
+server :: API AsServer
+server =
+  API
+    { america = NA.playersHandler
+    , europe = EU.playersHandler
+    , korea = KR.playersHandler
+    }
 
-routes :: ServerT API App
-routes =
-  NA.routes
-    :<|> EU.routes
-    :<|> KR.routes
-
-type API =
-  NA.API
-    :<|> EU.API
-    :<|> KR.API
+data API mode = API
+  { america :: mode :- NA.NaPlayersAPI
+  , europe :: mode :- EU.EuPlayersAPI
+  , korea :: mode :- KR.KrPlayersAPI
+  }
+  deriving stock (Generic)

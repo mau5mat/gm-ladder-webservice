@@ -7,7 +7,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Network.API.Routes.EU where
+module Network.API.Routes.EU (EuPlayersAPI, PlayersAPI, playersHandler) where
 
 import qualified Model.DbPlayer.Query as Query
 import qualified Model.DbPlayer.Service as Service
@@ -44,6 +44,8 @@ newtype PlayerNameAPI mode = PlayerNameAPI
   }
   deriving stock (Generic)
 
+type PlayerName = Text
+
 playersHandler :: PlayersAPI AsServer
 playersHandler =
   PlayersAPI
@@ -64,8 +66,6 @@ playerNameHandler =
   PlayerNameAPI
     { namedPlayer = playerByName
     }
-
-type PlayerName = Text
 
 allPlayers :: Handler [DbPlayer]
 allPlayers = do
