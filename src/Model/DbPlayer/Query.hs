@@ -10,7 +10,7 @@ module Model.DbPlayer.Query (
 
 import qualified Environment.Config as Config
 
-import App (App, runApp)
+import App (App)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.IO.Unlift (unliftIO)
 import Data.Text (Text)

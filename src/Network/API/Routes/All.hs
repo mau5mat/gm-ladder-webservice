@@ -5,7 +5,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Network.API.Routes.All where
@@ -24,19 +23,20 @@ import Network.Wai.Handler.Warp (
   Port,
   run,
  )
-import Servant (throwError)
 import Servant.API
-import Servant.Server (Server, ServerT, hoistServer, serve)
+import Servant.Server (serve)
 import Servant.Server.Generic (AsServer)
 
 runPort :: Port -> App ()
 runPort port = liftIO $ run port app
 
-api :: Proxy API
-api = Proxy @API
+type GmPlayersAPI = NamedRoutes API
+
+api :: Proxy GmPlayersAPI
+api = Proxy
 
 app :: Application
-app = _ _ _
+app = serve api server
 
 server :: API AsServer
 server =

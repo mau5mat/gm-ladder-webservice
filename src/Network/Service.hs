@@ -3,7 +3,7 @@ module Network.Service (createService, Service (..)) where
 import qualified Model.LadderTeams.Adaptor as LadderTeamsAdaptor
 import qualified Model.Player.Adaptor as PlayerAdaptor
 
-import App (App, runApp)
+import App (App)
 import BattleNet (createUrlWithRegion)
 import Data.Text (
   Text,

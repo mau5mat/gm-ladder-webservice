@@ -28,6 +28,7 @@ executable sc2-gm-ladder-backend
     , aeson
     , base                   ^>=4.17.2.0
     , conduit
+    , effectful-core
     , hspec
     , http-client
     , http-conduit

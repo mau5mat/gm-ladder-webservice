@@ -9,7 +9,7 @@ module App (
 
 import Control.Monad.IO.Class (liftIO)
 import Effectful (Eff, IOE, runEff)
-import Effectful.Error.Static (Error, runErrorNoCallStack, throwError)
+import Effectful.Error.Static (Error, runErrorNoCallStack)
 import Servant (ServerError)
 
 type App = Eff '[Error ServerError, IOE]
