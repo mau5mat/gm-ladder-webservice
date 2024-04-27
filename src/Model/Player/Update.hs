@@ -27,6 +27,12 @@ runRequests service = do
 
   return ()
 
+migrateAndInsertDbPlayers :: [DbPlayer] -> App ()
+migrateAndInsertDbPlayers dbPlayers = do
+  migrateDbEntity >> insertDbPlayers dbPlayers
+
+  return ()
+
 insertDbPlayers :: [DbPlayer] -> App ()
 insertDbPlayers entities =
   liftIO $ runSqlite Config.databaseName $ do
@@ -40,9 +46,3 @@ deleteAllPlayers =
     deleteWhere ([] :: [Filter DbPlayer])
 
     liftIO $ putStr "deleted db players"
-
-migrateAndInsertDbPlayers :: [DbPlayer] -> App ()
-migrateAndInsertDbPlayers dbPlayers = do
-  migrateDbEntity >> insertDbPlayers dbPlayers
-
-  return ()
